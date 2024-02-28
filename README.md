@@ -1,8 +1,6 @@
-# ResX Editor
+# ResX Editor (WIP)
 
 A visual editor for .resx files  
-
-WIP
 
 ![screenshot](https://github.com/8LWXpg/vscode-resx/blob/master/assets/screenshot.png)
 
