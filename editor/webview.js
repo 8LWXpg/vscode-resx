@@ -12,7 +12,7 @@ function postUpdate(obj) {
 	vscode.setState({ obj: obj });
 	vscode.postMessage({
 		type: 'update',
-		obj: obj
+		obj: obj,
 	});
 }
 
@@ -30,29 +30,29 @@ function inputEvent() {
 		}
 	}
 	postUpdate(obj);
-};
+}
 
 function deleteEvent(self) {
 	self.remove();
 	inputEvent();
-};
+}
 
 function addContent() {
 	const element = document.createElement('tr');
 	notesContainer.appendChild(element);
 	element.innerHTML = rowHtml('', '', '');
 	element.scrollIntoView();
-};
+}
 
 /**
  * returns the html for a row
- * @param {string} name 
- * @param {string} value 
- * @param {string} comment 
+ * @param {string} name
+ * @param {string} value
+ * @param {string} comment
  * @returns {string}
  */
 function rowHtml(name, value, comment) {
-	return /* html */`
+	return /* html */ `
 <td><input id="0" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" value="${name}"></td>
 <td><input id="1" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" value="${value}"></td>
 <td><input id="2" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" value="${comment}"></td>
@@ -106,15 +106,15 @@ function handleKeyEvent(e, input) {
 let sortFlags = {
 	'@_name': true,
 	value: true,
-	comment: true
+	comment: true,
 };
 
 /**
- * @param { 'value' | 'comment' | '@_name' } key 
+ * @param { 'value' | 'comment' | '@_name' } key
  */
 function sortObject(self, key) {
 	let /** @type {{value: string, comment?: string, '@_name': string}[]} obj */ obj = vscode.getState()?.obj;
-	obj.sort((a, b) => (b[key] || '').localeCompare((a[key] || '')));
+	obj.sort((a, b) => (b[key] || '').localeCompare(a[key] || ''));
 
 	if (sortFlags[key]) {
 		self.setAttribute('aria-sort', 'descending');
@@ -140,7 +140,7 @@ function sortComment(self) {
 }
 
 // Handle messages sent from the extension to the webview
-window.addEventListener('message', event => {
+window.addEventListener('message', (event) => {
 	const message = event.data; // The json data that the extension sent
 	switch (message.type) {
 		case 'update':

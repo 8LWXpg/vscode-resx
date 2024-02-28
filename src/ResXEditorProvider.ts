@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { XMLParser, XMLBuilder } from "fast-xml-parser";
+import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
 type XmlData = {
 	value: string;
@@ -43,7 +43,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		// get position of last </resheader> tag
 		this.start = text.lastIndexOf('</resheader>') + '</resheader>'.length;
 		// get line ending
-		this.lineEnding = text.substring(this.start, text.indexOf('\n', this.start) + 1);
+		this.lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
 		this.start += this.lineEnding.length;
 		// get indent
 		this.indent = text.substring(this.start, text.indexOf('<', this.start));
@@ -145,19 +145,19 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		}
 
 		const output: string = this.js2xml(obj);
-		const end = document.getText().lastIndexOf('</root>') - this.lineEnding.length;
+		const end = document.getText().lastIndexOf('</root>');
 
 		edit.replace(
 			document.uri,
 			new vscode.Range(document.positionAt(this.start), document.positionAt(end)),
-			output);
+			output,
+		);
 
 		return vscode.workspace.applyEdit(edit);
 	}
 
 	private xml2js(xml: string) {
 		try {
-
 			const data: XmlData[] = this.parser?.parse(xml).data;
 			data.forEach(obj => { delete obj['@_xml:space']; });
 			data.forEach(obj => { if (obj.comment === '') { delete obj.comment; } });
@@ -179,7 +179,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			const formatted: string = this.builder?.build({ a: { data: data } });
 			// xml builder uses \n as line ending, replace it with the original line ending
 			return formatted
-				.substring('<a>\n'.length, formatted.length - '\n</a>\n'.length)
+				.substring('<a>\n'.length, formatted.length - '</a>\n'.length)
 				.replaceAll('&quot;', '"')
 				.replaceAll('&apos;', "'")
 				.replaceAll('\n', this.lineEnding);
