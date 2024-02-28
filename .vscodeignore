@@ -7,3 +7,8 @@ src/**
 **/.eslintrc.json
 **/*.map
 **/*.ts
+.github
+assets
+test-resx
+TODO.md
+esbuild.js

@@ -4,7 +4,7 @@ A visual editor for .resx files
 
 WIP
 
-![screenshot](./assets/screenshot.png)
+![screenshot](https://github.com/8LWXpg/vscode-resx/blob/master/assets/screenshot.png)
 
 ## Features
 
