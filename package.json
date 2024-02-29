@@ -1,6 +1,6 @@
 {
-	"name": "web-resx-editor",
-	"displayName": "ResX Editor",
+	"name": "code-resx",
+	"displayName": "ResX Viewer/Editor",
 	"description": "Edit ResX and ResW files in Webview",
 	"version": "0.1.0",
 	"engines": {
@@ -52,7 +52,7 @@
 		],
 		"commands": [
 			{
-				"command": "web-resx-editor.createEmptyFile",
+				"command": "code-resx.createEmptyFile",
 				"title": "ResX: Create Empty File"
 			}
 		]

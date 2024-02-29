@@ -4,7 +4,7 @@ import { ResXEditorProvider } from './ResXEditorProvider';
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(ResXEditorProvider.register(context));
 	// command for making empty resx file
-	context.subscriptions.push(vscode.commands.registerCommand('web-resx-editor.createEmptyFile', createEmptyFile));
+	context.subscriptions.push(vscode.commands.registerCommand('code-resx.createEmptyFile', createEmptyFile));
 }
 
 async function createEmptyFile() {
