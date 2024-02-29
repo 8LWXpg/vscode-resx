@@ -2,22 +2,21 @@ import * as vscode from 'vscode';
 import { ResXEditorProvider } from './ResXEditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
-
 	context.subscriptions.push(ResXEditorProvider.register(context));
 	// command for making empty resx file
-	context.subscriptions.push(vscode.commands.registerCommand('resx.createEmptyFile', createEmptyFile));
+	context.subscriptions.push(vscode.commands.registerCommand('web-resx-editor.createEmptyFile', createEmptyFile));
 }
 
 async function createEmptyFile() {
 	const fileUri = await vscode.window.showSaveDialog({
 		filters: {
-			'ResX': ['resx']
+			ResX: ['resx'],
 		},
-		defaultUri: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined
+		defaultUri: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined,
 	});
 	if (fileUri) {
 		await vscode.workspace.fs.writeFile(fileUri, withBom());
-		vscode.commands.executeCommand("vscode.openWith", fileUri, ResXEditorProvider.viewType);
+		vscode.commands.executeCommand('vscode.openWith', fileUri, ResXEditorProvider.viewType);
 	}
 }
 
@@ -142,8 +141,8 @@ function withBom() {
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>
-`;
-	const bom: Uint8Array = new Uint8Array([0xEF, 0xBB, 0xBF]);
+`.replaceAll('\n', '\r\n');
+	const bom: Uint8Array = new Uint8Array([0xef, 0xbb, 0xbf]);
 	const encoder = new TextEncoder();
 	const utf8: Uint8Array = encoder.encode(emptyResX);
 
@@ -153,4 +152,4 @@ function withBom() {
 	return withBom;
 }
 
-export function deactivate() { }
+export function deactivate() {}

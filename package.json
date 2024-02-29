@@ -1,5 +1,5 @@
 {
-	"name": "vscode-resx-editor",
+	"name": "web-resx-editor",
 	"displayName": "ResX Editor",
 	"description": "Edit ResX and ResW files in Webview",
 	"version": "0.1.0",
@@ -52,7 +52,7 @@
 		],
 		"commands": [
 			{
-				"command": "resx.createEmptyFile",
+				"command": "web-resx-editor.createEmptyFile",
 				"title": "ResX: Create Empty File"
 			}
 		]
