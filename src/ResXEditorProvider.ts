@@ -16,7 +16,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		return providerRegistration;
 	}
 
-	private static readonly viewType = 'resx.editor';
+	public static readonly viewType = 'resx.editor';
 	private start = 0;
 	private indent = '';
 	private lineEnding = '';
@@ -41,12 +41,13 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 
 		const text = document.getText();
 		// get position of last </resheader> tag
-		this.start = text.lastIndexOf('</resheader>') + '</resheader>'.length;
+		const tagPos = text.lastIndexOf('</resheader>');
+		// get indent
+		this.indent = text.substring(text.lastIndexOf('\n', tagPos) + 1, tagPos);
+		this.start = tagPos + '</resheader>'.length;
 		// get line ending
 		this.lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
 		this.start += this.lineEnding.length;
-		// get indent
-		this.indent = text.substring(this.start, text.indexOf('<', this.start));
 
 		// parser, builder initialization
 		const options = {

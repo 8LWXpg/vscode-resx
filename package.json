@@ -47,6 +47,12 @@
 					".resw"
 				]
 			}
+		],
+		"commands": [
+			{
+				"command": "resx.createEmptyFile",
+				"title": "Create Empty ResX File"
+			}
 		]
 	},
 	"scripts": {
