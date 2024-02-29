@@ -3,13 +3,12 @@ import * as vscode from 'vscode';
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
 type XmlData = {
+	'@_name': string;
 	value: string;
 	comment?: string;
-	'@_name': string;
 };
 
 export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
-
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		const provider = new ResXEditorProvider(context);
 		const providerRegistration = vscode.window.registerCustomEditorProvider(ResXEditorProvider.viewType, provider);
@@ -23,14 +22,12 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	private parser?: XMLParser;
 	private builder?: XMLBuilder;
 
-	constructor(
-		private readonly context: vscode.ExtensionContext
-	) { }
+	constructor(private readonly context: vscode.ExtensionContext) {}
 
 	// Called when custom editor is opened.
 	public async resolveCustomTextEditor(
 		document: vscode.TextDocument,
-		webviewPanel: vscode.WebviewPanel,
+		webviewPanel: vscode.WebviewPanel
 	): Promise<void> {
 		// Setup initial content for the webview
 		webviewPanel.webview.options = {
@@ -52,7 +49,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		// parser, builder initialization
 		const options = {
 			ignoreAttributes: false,
-			attributeNamePrefix: "@_",
+			attributeNamePrefix: '@_',
 		};
 		this.parser = new XMLParser({
 			// assume we only receive array of data
@@ -73,11 +70,11 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			});
 		}
 
-		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
-			if (e.document.uri.toString() === document.uri.toString() && (
-				e.reason === vscode.TextDocumentChangeReason.Undo ||
-				e.reason === vscode.TextDocumentChangeReason.Redo
-			)) {
+		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
+			if (
+				e.document.uri.toString() === document.uri.toString() &&
+				(e.reason === vscode.TextDocumentChangeReason.Undo || e.reason === vscode.TextDocumentChangeReason.Redo)
+			) {
 				updateWebview(this, e.document);
 			}
 		});
@@ -86,7 +83,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			changeDocumentSubscription.dispose();
 		});
 
-		webviewPanel.webview.onDidReceiveMessage(message => {
+		webviewPanel.webview.onDidReceiveMessage((message) => {
 			switch (message.type) {
 				case 'update':
 					this.updateTextDocument(document, message.obj);
@@ -98,12 +95,17 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	}
 
 	private getHtmlForWebview(webview: vscode.Webview): string {
-		const scriptUri = webview.asWebviewUri(vscode.Uri.file(path.join(this.context.extensionPath, 'editor', 'webview.js')));
-		const styleUri = webview.asWebviewUri(vscode.Uri.file(path.join(this.context.extensionPath, 'editor', 'webview.css')));
+		const scriptUri = webview.asWebviewUri(
+			vscode.Uri.file(path.join(this.context.extensionPath, 'editor', 'webview.js'))
+		);
+		const styleUri = webview.asWebviewUri(
+			vscode.Uri.file(path.join(this.context.extensionPath, 'editor', 'webview.css'))
+		);
+		const sortableStyleUri = webview.asWebviewUri(
+			vscode.Uri.file(path.join(this.context.extensionPath, 'editor', 'sortable-base.min.css'))
+		);
 
-		const sortableStyleUri = webview.asWebviewUri(vscode.Uri.file(path.join(this.context.extensionPath, 'editor', 'sortable-base.min.css')));
-
-		return /* html */`<!DOCTYPE html>
+		return /* html */ `<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -148,11 +150,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		const output: string = this.js2xml(obj);
 		const end = document.getText().lastIndexOf('</root>');
 
-		edit.replace(
-			document.uri,
-			new vscode.Range(document.positionAt(this.start), document.positionAt(end)),
-			output,
-		);
+		edit.replace(document.uri, new vscode.Range(document.positionAt(this.start), document.positionAt(end)), output);
 
 		return vscode.workspace.applyEdit(edit);
 	}
@@ -160,8 +158,14 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	private xml2js(xml: string) {
 		try {
 			const data: XmlData[] = this.parser?.parse(xml).data;
-			data.forEach(obj => { delete obj['@_xml:space']; });
-			data.forEach(obj => { if (obj.comment === '') { delete obj.comment; } });
+			data.forEach((obj) => {
+				delete obj['@_xml:space'];
+			});
+			data.forEach((obj) => {
+				if (obj.comment === '') {
+					delete obj.comment;
+				}
+			});
 
 			return data;
 		} catch (e) {
@@ -176,9 +180,12 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			if (data.length === 0) {
 				return '';
 			}
-			data.forEach(obj => { obj['@_xml:space'] = 'preserve'; });
+			data.forEach((obj) => {
+				obj['@_xml:space'] = 'preserve';
+			});
 			const formatted: string = this.builder?.build({ a: { data: data } });
-			// xml builder uses \n as line ending, replace it with the original line ending
+			// replace '\n' it with the document line ending
+			// resx supports " and ' without escaping
 			return formatted
 				.substring('<a>\n'.length, formatted.length - '</a>\n'.length)
 				.replaceAll('&quot;', '"')
