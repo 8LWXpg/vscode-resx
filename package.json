@@ -7,6 +7,9 @@
 		"vscode": "^1.86.0"
 	},
 	"publisher": "8LWXpg",
+	"author": {
+		"name": "8LWXpg"
+	},
 	"categories": [
 		"Other"
 	],
@@ -15,13 +18,14 @@
 		"resw"
 	],
 	"bugs": {
+		"url": "https://github.com/8LWXpg/vscode-resx/issues"
+	},
+	"homepage": "https://github.com/8LWXpg/vscode-resx",
+	"repository": {
+		"type": "git",
 		"url": "https://github.com/8LWXpg/vscode-resx"
 	},
 	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": ""
-	},
 	"icon": "assets/icon.png",
 	"main": "./out/extension.js",
 	"browser": "./out/extension.js",
