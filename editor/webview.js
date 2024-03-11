@@ -20,7 +20,8 @@ function inputEvent() {
 	let obj = [];
 	let a = notesContainer.querySelectorAll('tr');
 	for (let rule of a) {
-		let inputs = rule.querySelectorAll('input');
+		// @ts-ignore
+		let /** @type {HTMLCollectionOf<HTMLInputElement|HTMLTextAreaElement>} */ inputs = rule.getElementsByClassName('input');
 		if (inputs[0].value && inputs[1].value) {
 			obj.push({
 				'@_name': inputs[0].value,
@@ -53,9 +54,9 @@ function addContent() {
  */
 function rowHtml(name, value, comment) {
 	return /* html */ `
-<td><input id="0" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" value="${name}"></td>
-<td><input id="1" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" value="${value}"></td>
-<td><input id="2" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" value="${comment}"></td>
+<td><input class="input" id="col0" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
+<td><textarea class="input" id="col1" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${value}</textarea></td>
+<td><textarea class="input" id="col2" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${comment}</textarea></td>
 <td><div class="drop" onclick="deleteEvent(this.parentElement.parentElement)">✖</div></td>
 `;
 }
@@ -75,31 +76,46 @@ function updateContent(obj) {
 }
 
 // Handle keyboard navigation
+/**
+ * 
+ * @param {KeyboardEvent} e 
+ * @param {HTMLElement} input 
+ * @returns 
+ */
 function handleKeyEvent(e, input) {
+	if (!e.ctrlKey) { return; }
+	let /** @type {HTMLInputElement | HTMLTextAreaElement | null | undefined} */ next;
 	switch (e.key) {
+		case 'ArrowUp': {
+			e.preventDefault();
+			const tr = input.parentElement?.parentElement;
+			next = tr?.previousElementSibling?.querySelector(`td #${input.id}`);
+			break;
+		}
 		case 'Enter':
-		case 'ArrowDown':
+		case 'ArrowDown': {
 			e.preventDefault();
-			const tr = input.parentElement.parentElement;
-			const nextInput = tr.nextElementSibling?.querySelector(`td input[id="${input.id}"]`);
-			if (nextInput) {
-				const end = nextInput.value.length;
-				nextInput.setSelectionRange(0, end);
-				nextInput.focus();
-			}
+			const tr = input.parentElement?.parentElement;
+			next = tr?.nextElementSibling?.querySelector(`td #${input.id}`);
 			break;
-		case 'ArrowUp':
+		}
+		case 'ArrowLeft': {
 			e.preventDefault();
-			const tr2 = input.parentElement.parentElement;
-			const prevInput = tr2.previousElementSibling?.querySelector(`td input[id="${input.id}"]`);
-			if (prevInput) {
-				const end = prevInput.value.length;
-				prevInput.setSelectionRange(0, end);
-				prevInput.focus();
-			}
+			next = input.parentElement?.previousElementSibling?.querySelector('.input');
 			break;
+		}
+		case 'ArrowRight': {
+			e.preventDefault();
+			next = input.parentElement?.nextElementSibling?.querySelector('.input');
+			break;
+		}
 		default:
 			break;
+	}
+	if (next) {
+		const end = next.value.length;
+		next.setSelectionRange(0, end);
+		next.focus();
 	}
 }
 
@@ -152,7 +168,7 @@ window.addEventListener('message', (event) => {
 	}
 });
 
-// Webviews are normally torn down when not visible and re-created when they become visible again.
+// Webview are normally torn down when not visible and re-created when they become visible again.
 // State lets us save information across these re-loads
 const state = vscode.getState();
 if (state) {

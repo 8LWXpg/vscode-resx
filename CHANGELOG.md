@@ -2,8 +2,16 @@
 
 All notable changes to the "resx" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.2.0]
 
-## [Unreleased]
+- Add support for newline in `value` and `comment` attributes
+- Change key for moving up and down to <kbd>Ctrl+Up</kbd> <kbd>Ctrl+Down</kbd>
+- Minify webview js and css
+
+## [0.1.1]
+
+- Complete missing `package.json` fields
+
+## [0.1.0]
 
 - Initial release

@@ -6,7 +6,16 @@ A visual editor for .resx files
 
 ## Features
 
-- **Keyboard navigation:** <kbd>Tab</kbd>, <kbd>Shift+Tab</kbd> to move left and right, <kbd>Enter</kbd> and <kbd>ArrowDown</kbd> to move down, <kbd>ArrowUp</kbd> to move up.
+- **Keyboard navigation:**
+  
+  Move up: <kbd>Ctrl+Up</kbd>
+  
+  Move down: <kbd>Ctrl+Down</kbd> or <kbd>Ctrl+Enter</kbd>
+  
+  Move left: <kbd>Shift+Tab</kbd> or <kbd>Ctrl+Left</kbd>
+  
+  Move right: <kbd>Tab</kbd> or <kbd>Ctrl+Right</kbd>
+
 - **Sortable table:** click on the column header to sort the rows.
 - **Support redo/undo:** redo/undo updates webview accordingly.
 - **Small package size:** less than 20KiB.

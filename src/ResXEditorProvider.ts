@@ -30,7 +30,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	): Promise<void> {
 		// Setup initial content for the webview
 		webviewPanel.webview.options = {
-			localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'editor')],
+			localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'view')],
 			enableScripts: true,
 		};
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
@@ -94,10 +94,10 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	}
 
 	private getHtmlForWebview(webview: vscode.Webview): string {
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'editor', 'webview.js'));
-		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'editor', 'webview.css'));
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.js'));
+		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.css'));
 		const sortableStyleUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this.context.extensionUri, 'editor', 'sortable-base.min.css')
+			vscode.Uri.joinPath(this.context.extensionUri, 'view', 'sortable-base.min.css')
 		);
 
 		return /* html */ `<!DOCTYPE html>

@@ -13,3 +13,4 @@ test-resx
 esbuild.js
 out\ResXEditorProvider.js
 assets\screenshot.png
+editor/**
