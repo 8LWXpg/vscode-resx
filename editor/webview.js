@@ -62,7 +62,7 @@ function rowHtml(name, value, comment) {
 }
 
 /**
- * @param {{value: string, comment?: string, '@_name': string}[]} obj obj
+ * @param {{value: string, comment?: string, '@_name': string}[]} obj
  */
 function updateContent(obj) {
 	notesContainer.innerHTML = '';
@@ -112,11 +112,7 @@ function handleKeyEvent(e, input) {
 		default:
 			break;
 	}
-	if (next) {
-		const end = next.value.length;
-		next.setSelectionRange(0, end);
-		next.focus();
-	}
+	if (next) { next.focus(); }
 }
 
 let sortFlags = {
@@ -168,7 +164,7 @@ window.addEventListener('message', (event) => {
 	}
 });
 
-// Webview are normally torn down when not visible and re-created when they become visible again.
+// Webview is normally torn down when not visible and re-created when they become visible again.
 // State lets us save information across these re-loads
 const state = vscode.getState();
 if (state) {

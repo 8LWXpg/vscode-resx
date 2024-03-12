@@ -1,11 +1,14 @@
-const { build, context } = require("esbuild");
+// @ts-check
+const { build } = require("esbuild");
 
+/** @type {import("esbuild").BuildOptions} */
 const baseConfig = {
   bundle: true,
   minify: true,
   sourcemap: false,
 };
 
+/** @type {import("esbuild").BuildOptions} */
 const extensionConfig = {
   ...baseConfig,
   platform: "node",
@@ -15,12 +18,14 @@ const extensionConfig = {
   external: ["vscode"],
 };
 
+/** @type {import("esbuild").BuildOptions} */
 const webviewConfig = {
   minify: true,
   entryPoints: ["./editor/webview.js"],
   outfile: "./view/webview.js",
 };
 
+/** @type {import("esbuild").BuildOptions} */
 const webviewCssConfig = {
   minify: true,
   entryPoints: ["./editor/webview.css", "./editor/sortable-base.min.css"],
