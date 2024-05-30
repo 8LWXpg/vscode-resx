@@ -62,10 +62,10 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "rm -r ./out && node ./esbuild.js",
+		"vscode:prepublish": "bun run compile",
+		"compile": "rm -r ./out && bun ./esbuild.js",
 		"watch": "tsc -watch -p ./",
-		"check-update": "npx npm-check-updates"
+		"check-update": "bunx npm-check-updates"
 	},
 	"devDependencies": {
 		"@types/glob": "^8.1.0",

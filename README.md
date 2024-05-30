@@ -17,6 +17,6 @@ A visual editor for .resx files
   Move right: <kbd>Tab</kbd> or <kbd>Ctrl+Right</kbd>
 
 - **Sortable table:** click on the column header to sort the rows.
-- **Support redo/undo:** redo/undo updates webview accordingly.
+- **Sync with document:** change in document will be reflected in the editor immediately, and vice versa.
 - **Small package size:** less than 20KiB.
 - **Web extension**: support on the web (vscode.dev, GitHub Codespaces).

@@ -10,9 +10,12 @@
     "typescript.tsc.autoDetect": "off",
     "cSpell.words": [
         "apos",
+        "bunx",
         "Codespaces",
         "colspan",
+        "outdir",
         "resheader",
+        "resw",
         "resx"
     ],
     "js/ts.implicitProjectConfig.target": "ESNext"
