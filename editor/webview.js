@@ -1,41 +1,55 @@
 // @ts-check
 
+/**
+ * @typedef {{'@_name': string, value: string, comment?: string}[]} WebviewState
+ * @typedef {{obj: WebviewState}} State
+ */
+
 // @ts-ignore
 const vscode = acquireVsCodeApi();
 
-const notesContainer = /** @type {HTMLElement} */ (document.querySelector('tbody'));
+const notesContainer = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
 
 /**
- * @param {{value: string, comment?: string, '@_name': string}[]} obj
+ * Handle the input event for inputs, trickier because name must be unique
  */
-function postUpdate(obj) {
-	vscode.setState({ obj: obj });
-	vscode.postMessage({
-		type: 'update',
-		obj: obj,
-	});
+function inputEvent(self) {
+	/** @type {State} */
+	let { obj } = vscode.getState();
+	const value = self.querySelector('#col1').value;
+	const comment = self.querySelector('#col2').value || undefined;
+	let current = obj.find((ele) => ele['value'] === value && ele['comment'] === comment);
+	if (!current) {
+		return;
+	}
+	current['@_name'] = self.querySelector('#col0').value;
+	setStateAndPostUpdate(obj);
 }
 
-function inputEvent() {
-	let obj = [];
-	let a = notesContainer.querySelectorAll('tr');
-	for (let rule of a) {
-		// @ts-ignore
-		let /** @type {HTMLCollectionOf<HTMLInputElement|HTMLTextAreaElement>} */ inputs = rule.getElementsByClassName('input');
-		if (inputs[0].value && inputs[1].value) {
-			obj.push({
-				'@_name': inputs[0].value,
-				value: inputs[1].value,
-				comment: inputs[2].value === '' ? undefined : inputs[2].value,
-			});
-		}
+/**
+ * Handle the input event for textarea
+ */
+function textareaEvent(self) {
+	/** @type {State} */
+	let { obj } = vscode.getState();
+	const name = self.querySelector('#col0').value;
+	let current = obj.find((ele) => ele['@_name'] === name);
+	if (!current) {
+		return;
 	}
-	postUpdate(obj);
+	current.value = self.querySelector('#col1').value;
+	current.comment = self.querySelector('#col2').value;
+	setStateAndPostUpdate(obj);
 }
 
 function deleteEvent(self) {
+	/** @type {State} */
+	let { obj } = vscode.getState();
+	const value = self.querySelector('#col0').value;
+	obj = obj.filter((ele) => ele['@_name'] !== value);
 	self.remove();
-	inputEvent();
+	updateContent(obj);
+	setStateAndPostUpdate(obj);
 }
 
 function addContent() {
@@ -46,23 +60,24 @@ function addContent() {
 }
 
 /**
- * returns the html for a row
+ * Returns the html for a row
  * @param {string} name
  * @param {string} value
  * @param {string} comment
- * @returns {string}
+ * @returns {string} html
  */
 function rowHtml(name, value, comment) {
 	return /* html */ `
-<td><input class="input" id="col0" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
-<td><textarea class="input" id="col1" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${value}</textarea></td>
-<td><textarea class="input" id="col2" oninput="inputEvent()" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${comment}</textarea></td>
+<td><input class="input" id="col0" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
+<td><textarea class="input" id="col1" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${value}</textarea></td>
+<td><textarea class="input" id="col2" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${comment}</textarea></td>
 <td><div class="drop" onclick="deleteEvent(this.parentElement.parentElement)">✖</div></td>
 `;
 }
 
 /**
- * @param {{value: string, comment?: string, '@_name': string}[]} obj
+ * Update content of the table
+ * @param {WebviewState} obj
  */
 function updateContent(obj) {
 	notesContainer.innerHTML = '';
@@ -75,9 +90,8 @@ function updateContent(obj) {
 	});
 }
 
-// Handle keyboard navigation
 /**
- * 
+ * Handle keyboard navigation
  * @param {KeyboardEvent} e 
  * @param {HTMLElement} input 
  * @returns 
@@ -125,7 +139,8 @@ let sortFlags = {
  * @param { 'value' | 'comment' | '@_name' } key
  */
 function sortObject(self, key) {
-	let /** @type {{value: string, comment?: string, '@_name': string}[]} obj */ obj = vscode.getState()?.obj;
+	/** @type {{value: string, comment?: string, '@_name': string}[]} obj */
+	let obj = vscode.getState()?.obj;
 	obj.sort((a, b) => (b[key] || '').localeCompare(a[key] || ''));
 
 	if (sortFlags[key]) {
@@ -136,19 +151,20 @@ function sortObject(self, key) {
 	}
 	sortFlags[key] = !sortFlags[key];
 	updateContent(obj);
-	postUpdate(obj);
+	setStateAndPostUpdate(obj);
 }
 
-function sortName(self) {
-	sortObject(self, '@_name');
-}
-
-function sortValue(self) {
-	sortObject(self, 'value');
-}
-
-function sortComment(self) {
-	sortObject(self, 'comment');
+/**
+ * Update webview state then post an update message
+ * @param {WebviewState} obj
+ */
+function setStateAndPostUpdate(obj) {
+	vscode.setState({ obj: obj });
+	vscode.postMessage({
+		// update text in the file
+		type: 'update',
+		obj: obj,
+	});
 }
 
 // Handle messages sent from the extension to the webview
@@ -159,7 +175,7 @@ window.addEventListener('message', (event) => {
 			// use the object that represents the document to track the state of the webview
 			const obj = message.obj;
 			updateContent(obj);
-			vscode.setState({ obj: obj });
+			vscode.setState({ obj });
 			return;
 	}
 });

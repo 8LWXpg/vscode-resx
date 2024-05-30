@@ -142,13 +142,9 @@ function withBom() {
   </resheader>
 </root>
 `.replaceAll('\n', '\r\n');
-	const bom: Uint8Array = new Uint8Array([0xef, 0xbb, 0xbf]);
-	const encoder = new TextEncoder();
-	const utf8: Uint8Array = encoder.encode(emptyResX);
+	const utf8: Uint8Array = new TextEncoder().encode(emptyResX);
 
-	const withBom: Uint8Array = new Uint8Array(bom.length + utf8.length);
-	withBom.set(bom);
-	withBom.set(utf8, bom.length);
+	const withBom: Uint8Array = Uint8Array.from([0xef, 0xbb, 0xbf, ...utf8]);
 	return withBom;
 }
 

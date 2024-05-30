@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
+import { version } from 'os';
 
 type XmlData = {
 	'@_name': string;
@@ -20,6 +21,8 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	private lineEnding = '';
 	private parser?: XMLParser;
 	private builder?: XMLBuilder;
+	private updateFromWebview = false;
+	private documentVersion = 0;
 
 	constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -65,16 +68,20 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			const text = doc.getText();
 			webviewPanel.webview.postMessage({
 				type: 'update',
+				version: doc.version,
 				obj: self.xml2js(text.substring(self.start, text.lastIndexOf('</root>') - self.lineEnding.length)),
 			});
 		}
 
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
-			if (
-				e.document.uri.toString() === document.uri.toString() &&
-				(e.reason === vscode.TextDocumentChangeReason.Undo || e.reason === vscode.TextDocumentChangeReason.Redo)
-			) {
-				updateWebview(this, e.document);
+			// Undo and Redo fires another onDidChangeTextDocument event, so we need to check if the version is different
+			if (e.document.uri.toString() === document.uri.toString() && e.document.version !== this.documentVersion) {
+				if (this.updateFromWebview) {
+					this.updateFromWebview = false;
+				} else {
+					updateWebview(this, e.document);
+				}
+				this.documentVersion = e.document.version;
 			}
 		});
 
@@ -85,6 +92,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		webviewPanel.webview.onDidReceiveMessage((message) => {
 			switch (message.type) {
 				case 'update':
+					this.updateFromWebview = true;
 					this.updateTextDocument(document, message.obj);
 					return;
 			}
