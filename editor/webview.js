@@ -154,6 +154,19 @@ function sortObject(self, key) {
 	setStateAndPostUpdate(obj);
 }
 
+// Functions used by <th> elements to sort the table
+function sortName(self) {
+	sortObject(self, '@_name');
+}
+
+function sortValue(self) {
+	sortObject(self, 'value');
+}
+
+function sortComment(self) {
+	sortObject(self, 'comment');
+}
+
 /**
  * Update webview state then post an update message
  * @param {WebviewState} obj
