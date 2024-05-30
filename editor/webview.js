@@ -16,13 +16,19 @@ const notesContainer = /** @type {HTMLTableSectionElement} */ (document.querySel
 function inputEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
-	const value = self.querySelector('#col1').value;
+	const name = self.querySelector('#col0').value;
+	const value = self.querySelector('#col1').value || undefined;
 	const comment = self.querySelector('#col2').value || undefined;
 	let current = obj.find((ele) => ele['value'] === value && ele['comment'] === comment);
 	if (!current) {
-		return;
+		if (!value) {
+			return;
+		}
+		current = { '@_name': name, value, comment };
+		obj.push(current);
+	} else {
+		current['@_name'] = name;
 	}
-	current['@_name'] = self.querySelector('#col0').value;
 	setStateAndPostUpdate(obj);
 }
 
@@ -33,12 +39,16 @@ function textareaEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
 	const name = self.querySelector('#col0').value;
+	const value = self.querySelector('#col1').value || undefined;
+	const comment = self.querySelector('#col2').value || undefined;
 	let current = obj.find((ele) => ele['@_name'] === name);
 	if (!current) {
-		return;
+		current = { '@_name': name, value };
+		obj.push(current);
+	} else {
+		current.value = value;
 	}
-	current.value = self.querySelector('#col1').value;
-	current.comment = self.querySelector('#col2').value;
+	current.comment = comment;
 	setStateAndPostUpdate(obj);
 }
 
@@ -82,8 +92,8 @@ function rowHtml(name, value, comment) {
 function updateContent(obj) {
 	notesContainer.innerHTML = '';
 	obj.forEach((ele) => {
-		const comment = (ele?.comment || '').replaceAll('"', '&quot;');
-		const value = ele.value.replaceAll('"', '&quot;');
+		const comment = (ele.comment || '').replaceAll('"', '&quot;');
+		const value = (ele.value || '').replaceAll('"', '&quot;');
 		const element = document.createElement('tr');
 		notesContainer.appendChild(element);
 		element.innerHTML = rowHtml(ele['@_name'], value, comment);
