@@ -22,7 +22,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	private parser?: XMLParser;
 	private builder?: XMLBuilder;
 	private updateFromWebview = false;
-	private documentVersion = 0;
+	private documentVersion = 1;
 
 	constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -68,7 +68,6 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			const text = doc.getText();
 			webviewPanel.webview.postMessage({
 				type: 'update',
-				version: doc.version,
 				obj: self.xml2js(text.substring(self.start, text.lastIndexOf('</root>') - self.lineEnding.length)),
 			});
 		}

@@ -189,6 +189,7 @@ window.addEventListener('message', (event) => {
 			const obj = message.obj;
 			updateContent(obj);
 			vscode.setState({ obj });
+			console.log('update', obj);
 			return;
 	}
 });
