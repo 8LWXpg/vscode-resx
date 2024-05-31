@@ -62,7 +62,7 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "bun run compile",
+		"vscode:prepublish": "npm run compile",
 		"compile": "rm -r ./out && bun ./esbuild.js",
 		"watch": "tsc -watch -p ./",
 		"check-update": "bunx npm-check-updates"
