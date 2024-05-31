@@ -13,4 +13,6 @@ test-resx
 esbuild.js
 out\ResXEditorProvider.js
 assets\screenshot.png
+assets\icon.svg
 editor/**
+bun.lockb
