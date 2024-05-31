@@ -1,9 +1,10 @@
 # Change Log
 
-## Unreleased
+## [0.3.0]
 
 - Support update webview content when document is changed other than redo/undo.
 - Change webview rendering logic to more align with document change.
+- New icon.
 
 ## [0.2.0]
 
