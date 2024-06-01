@@ -43,15 +43,16 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="9.11"
-   inkscape:cx="50.93304"
-   inkscape:cy="51.975851"
+   inkscape:zoom="4.555"
+   inkscape:cx="49.615807"
+   inkscape:cy="31.94292"
    inkscape:window-width="1920"
    inkscape:window-height="1166"
    inkscape:window-x="-11"
    inkscape:window-y="-11"
    inkscape:window-maximized="1"
-   inkscape:current-layer="Layer_1" />
+   inkscape:current-layer="Layer_1"
+   showgrid="false" />
 
 
 
@@ -82,6 +83,6 @@
    id="text7"><tspan
      sodipodi:role="line"
      id="tspan7"
-     style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:11.9467px;font-family:'Cascadia Code';-inkscape-font-specification:'Cascadia Code Ultra-Light';letter-spacing:0.96px;fill:#ffffff;stroke:#ffffff;stroke-width:1.088;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:11.9467px;font-family:'Cascadia Code';-inkscape-font-specification:'Cascadia Code Ultra-Light';letter-spacing:0.96px;fill:#ffffff;stroke:#ffffff;stroke-width:1.088;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;fill-opacity:1"
      x="13.141235"
      y="44.141663">RESX</tspan></text></svg>
