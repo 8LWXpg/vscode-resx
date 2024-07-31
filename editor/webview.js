@@ -8,7 +8,7 @@
 // @ts-ignore
 const vscode = acquireVsCodeApi();
 
-const notesContainer = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
+const container = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
 
 /**
  * Handle the input event for inputs, trickier because name must be unique
@@ -64,7 +64,7 @@ function deleteEvent(self) {
 
 function addContent() {
 	const element = document.createElement('tr');
-	notesContainer.appendChild(element);
+	container.appendChild(element);
 	element.innerHTML = rowHtml('', '', '');
 	element.scrollIntoView();
 }
@@ -90,12 +90,12 @@ function rowHtml(name, value, comment) {
  * @param {WebviewState} obj
  */
 function updateContent(obj) {
-	notesContainer.innerHTML = '';
+	container.innerHTML = '';
 	obj.forEach((ele) => {
 		const comment = (ele.comment || '').replaceAll('"', '&quot;');
 		const value = (ele.value || '').replaceAll('"', '&quot;');
 		const element = document.createElement('tr');
-		notesContainer.appendChild(element);
+		container.appendChild(element);
 		element.innerHTML = rowHtml(ele['@_name'], value, comment);
 	});
 }
