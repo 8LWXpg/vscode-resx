@@ -36,6 +36,7 @@ function inputEvent(self) {
  * Handle the input event for textarea
  */
 function textareaEvent(self) {
+	auto_grow(self);
 	/** @type {State} */
 	let { obj } = vscode.getState();
 	const name = self.querySelector('#col0').value;
@@ -50,6 +51,17 @@ function textareaEvent(self) {
 	}
 	current.comment = comment;
 	setStateAndPostUpdate(obj);
+}
+
+function auto_grow(row) {
+	let inputs = Array.from(row.querySelectorAll('.input'));
+	inputs.forEach((ele) => {
+		ele.style.height = '5px';
+	});
+	let maxHeight = Math.max(...inputs.map((ele) => ele.scrollHeight));
+	inputs.forEach((ele) => {
+		ele.style.height = maxHeight + 'px';
+	});
 }
 
 function deleteEvent(self) {
@@ -79,8 +91,8 @@ function addContent() {
 function rowHtml(name, value, comment) {
 	return /* html */ `
 <td><input class="input" id="col0" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
-<td><textarea class="input" id="col1" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${value}</textarea></td>
-<td><textarea class="input" id="col2" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" rows="1">${comment}</textarea></td>
+<td><textarea rows="1" class="input" id="col1" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${value}</textarea></td>
+<td><textarea rows="1" class="input" id="col2" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${comment}</textarea></td>
 <td><div class="drop" onclick="deleteEvent(this.parentElement.parentElement)">✖</div></td>
 `;
 }
@@ -97,17 +109,20 @@ function updateContent(obj) {
 		const element = document.createElement('tr');
 		container.appendChild(element);
 		element.innerHTML = rowHtml(ele['@_name'], value, comment);
+		auto_grow(element);
 	});
 }
 
 /**
  * Handle keyboard navigation
- * @param {KeyboardEvent} e 
- * @param {HTMLElement} input 
- * @returns 
+ * @param {KeyboardEvent} e
+ * @param {HTMLElement} input
+ * @returns
  */
 function handleKeyEvent(e, input) {
-	if (!e.ctrlKey) { return; }
+	if (!e.ctrlKey) {
+		return;
+	}
 	let /** @type {HTMLInputElement | HTMLTextAreaElement | null | undefined} */ next;
 	switch (e.key) {
 		case 'ArrowUp': {
@@ -123,20 +138,12 @@ function handleKeyEvent(e, input) {
 			next = tr?.nextElementSibling?.querySelector(`td #${input.id}`);
 			break;
 		}
-		case 'ArrowLeft': {
-			e.preventDefault();
-			next = input.parentElement?.previousElementSibling?.querySelector('.input');
-			break;
-		}
-		case 'ArrowRight': {
-			e.preventDefault();
-			next = input.parentElement?.nextElementSibling?.querySelector('.input');
-			break;
-		}
 		default:
 			break;
 	}
-	if (next) { next.focus(); }
+	if (next) {
+		next.focus();
+	}
 }
 
 let sortFlags = {

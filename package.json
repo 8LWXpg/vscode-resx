@@ -65,7 +65,7 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "rm -r ./out && bun ./esbuild.js",
 		"watch": "tsc -watch -p ./",
-		"check-update": "bunx npm-check-updates"
+		"check-update": "bun x npm-check-updates"
 	},
 	"devDependencies": {
 		"@types/node": "^20.14.9",
@@ -74,9 +74,9 @@
 		"@typescript-eslint/parser": "^7.14.1",
 		"@vscode/test-cli": "^0.0.9",
 		"@vscode/test-electron": "^2.4.0",
-		"esbuild": "^0.21.5",
+		"esbuild": "^0.24.0",
 		"eslint": "^8.56.0",
-		"fast-xml-parser": "^4.4.0",
+		"fast-xml-parser": "^4.5.0",
 		"typescript": "^5.5.2"
 	}
 }

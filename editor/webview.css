@@ -34,7 +34,7 @@ button {
     outline: 1px solid transparent;
     outline-offset: 2px !important;
     color: var(--vscode-button-foreground);
-    background: var(--vscode-button-background)
+    background: var(--vscode-button-background);
 }
 
 button:hover {
@@ -62,6 +62,7 @@ textarea {
     border: none;
     font-family: var(--vscode-font-family);
     padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+    box-sizing: border-box;
     color: var(--vscode-input-foreground);
     outline-color: var(--vscode-input-border);
     background-color: var(--vscode-input-background);
@@ -75,6 +76,8 @@ textarea::placeholder {
 textarea {
     resize: none;
     grid-auto-rows: max-content;
+    /* overflow-x: auto; */
+    /* white-space: nowrap; */
 }
 
 table {

@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.4.0]
+
+- Supports auto scale textarea height.
+- Removed <kbd>Ctrl+Left</kbd> <kbd>Ctrl+Right</kbd> key bindings, for it's often used in text editing.
+
 ## [0.3.0]
 
 - Support update webview content when document is changed other than redo/undo.
