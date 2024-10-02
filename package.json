@@ -65,7 +65,7 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "rm -r ./out, ./view && node ./esbuild.js",
 		"watch": "tsc -watch -p ./",
-		"check-update": "npx npm-check-updates"
+		"check-update": "ncu"
 	},
 	"devDependencies": {
 		"@types/node": "^20.14.9",
