@@ -36,7 +36,7 @@ function inputEvent(self) {
  * Handle the input event for textarea
  */
 function textareaEvent(self) {
-	auto_grow(self);
+	autoGrow(self);
 	/** @type {State} */
 	let { obj } = vscode.getState();
 	const name = self.querySelector('#col0').value;
@@ -53,7 +53,7 @@ function textareaEvent(self) {
 	setStateAndPostUpdate(obj);
 }
 
-function auto_grow(row) {
+function autoGrow(row) {
 	let inputs = Array.from(row.querySelectorAll('.input'));
 	inputs.forEach((ele) => {
 		ele.style.height = '5px';
@@ -109,7 +109,7 @@ function updateContent(obj) {
 		const element = document.createElement('tr');
 		container.appendChild(element);
 		element.innerHTML = rowHtml(ele['@_name'], value, comment);
-		auto_grow(element);
+		autoGrow(element);
 	});
 }
 
