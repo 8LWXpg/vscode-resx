@@ -63,9 +63,9 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "rm -r ./out && bun ./esbuild.js",
+		"compile": "rm -r ./out, ./view && npm ./esbuild.js",
 		"watch": "tsc -watch -p ./",
-		"check-update": "bun x npm-check-updates"
+		"check-update": "npx npm-check-updates"
 	},
 	"devDependencies": {
 		"@types/node": "^20.14.9",
