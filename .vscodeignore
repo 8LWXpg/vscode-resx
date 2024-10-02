@@ -11,8 +11,9 @@ src/**
 *.vsix
 test-resx
 esbuild.js
-out\ResXEditorProvider.js
-assets\screenshot.png
-assets\icon.svg
+out/ResXEditorProvider.js
+assets/*
+!assets/icon.png
 editor/**
 bun.lockb
+node_modules/**

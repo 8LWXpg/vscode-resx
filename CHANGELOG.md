@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.1]
+
+- Remove unused file in extension package.
+
 ## [0.4.0]
 
 - Supports auto scale textarea height.
