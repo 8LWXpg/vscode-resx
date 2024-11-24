@@ -1,8 +1,9 @@
 // @ts-check
 
 /**
- * @typedef {{'@_name': string, value: string, comment?: string}[]} WebviewState
- * @typedef {{obj: WebviewState}} State
+ * @typedef {{ '@_name': string; value: string; comment?: string }[]} WebviewState
+ *
+ * @typedef {{ obj: WebviewState }} State
  */
 
 // @ts-ignore
@@ -10,15 +11,13 @@ const vscode = acquireVsCodeApi();
 
 const container = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
 
-/**
- * Handle the input event for inputs, trickier because name must be unique
- */
+/** Handle the input event for inputs, trickier because name must be unique */
 function inputEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
-	const name = self.querySelector('#col0').value;
-	const value = self.querySelector('#col1').value || undefined;
-	const comment = self.querySelector('#col2').value || undefined;
+	const name = self.querySelector('#name').value;
+	const value = self.querySelector('#value').value || undefined;
+	const comment = self.querySelector('#comment').value || undefined;
 	let current = obj.find((ele) => ele['value'] === value && ele['comment'] === comment);
 	if (!current) {
 		if (!value) {
@@ -32,16 +31,14 @@ function inputEvent(self) {
 	setStateAndPostUpdate(obj);
 }
 
-/**
- * Handle the input event for textarea
- */
+/** Handle the input event for textarea */
 function textareaEvent(self) {
 	autoGrow(self);
 	/** @type {State} */
 	let { obj } = vscode.getState();
-	const name = self.querySelector('#col0').value;
-	const value = self.querySelector('#col1').value || undefined;
-	const comment = self.querySelector('#col2').value || undefined;
+	const name = self.querySelector('#name').value;
+	const value = self.querySelector('#value').value || undefined;
+	const comment = self.querySelector('#comment').value || undefined;
 	let current = obj.find((ele) => ele['@_name'] === name);
 	if (!current) {
 		current = { '@_name': name, value };
@@ -67,7 +64,7 @@ function autoGrow(row) {
 function deleteEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
-	const value = self.querySelector('#col0').value;
+	const value = self.querySelector('#name').value;
 	obj = obj.filter((ele) => ele['@_name'] !== value);
 	self.remove();
 	updateContent(obj);
@@ -83,22 +80,24 @@ function addContent() {
 
 /**
  * Returns the html for a row
+ *
  * @param {string} name
  * @param {string} value
  * @param {string} comment
- * @returns {string} html
+ * @returns {string} Html
  */
 function rowHtml(name, value, comment) {
 	return /* html */ `
-<td><input class="input" id="col0" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
-<td><textarea rows="1" class="input" id="col1" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${value}</textarea></td>
-<td><textarea rows="1" class="input" id="col2" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${comment}</textarea></td>
+<td><input class="input" id="name" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
+<td><textarea rows="1" class="input" id="value" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${value}</textarea></td>
+<td><textarea rows="1" class="input" id="comment" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${comment}</textarea></td>
 <td><div class="drop" onclick="deleteEvent(this.parentElement.parentElement)">✖</div></td>
 `;
 }
 
 /**
  * Update content of the table
+ *
  * @param {WebviewState} obj
  */
 function updateContent(obj) {
@@ -115,6 +114,7 @@ function updateContent(obj) {
 
 /**
  * Handle keyboard navigation
+ *
  * @param {KeyboardEvent} e
  * @param {HTMLElement} input
  * @returns
@@ -152,13 +152,21 @@ let sortFlags = {
 	comment: true,
 };
 
-/**
- * @param { 'value' | 'comment' | '@_name' } key
- */
+/** @param {'value' | 'comment' | '@_name'} key */
 function sortObject(self, key) {
-	/** @type {{value: string, comment?: string, '@_name': string}[]} obj */
+	/** @type {WebviewState} */
 	let obj = vscode.getState()?.obj;
 	obj.sort((a, b) => (b[key] || '').localeCompare(a[key] || ''));
+
+	// Reset all other th elements
+	const allHeaders = self.parentElement?.getElementsByTagName('th');
+	if (allHeaders) {
+		Array.from(allHeaders).forEach((header) => {
+			if (header !== self) {
+				header.removeAttribute('aria-sort');
+			}
+		});
+	}
 
 	if (sortFlags[key]) {
 		self.setAttribute('aria-sort', 'descending');
@@ -186,6 +194,7 @@ function sortComment(self) {
 
 /**
  * Update webview state then post an update message
+ *
  * @param {WebviewState} obj
  */
 function setStateAndPostUpdate(obj) {

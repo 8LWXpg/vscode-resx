@@ -2,15 +2,10 @@
 const { build } = require('esbuild');
 
 /** @type {import("esbuild").BuildOptions} */
-const baseConfig = {
+const extensionConfig = {
 	bundle: true,
 	minify: true,
-	sourcemap: false,
-};
-
-/** @type {import("esbuild").BuildOptions} */
-const extensionConfig = {
-	...baseConfig,
+	sourcemap: true,
 	platform: 'node',
 	format: 'cjs',
 	entryPoints: ['./src/extension.ts', './src/ResXEditorProvider.ts'],
