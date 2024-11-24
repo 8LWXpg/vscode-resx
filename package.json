@@ -58,22 +58,37 @@
 			{
 				"command": "code-resx.createEmptyFile",
 				"title": "ResX: Create Empty File"
+			},
+			{
+				"command": "code-resx.updateOtherResources",
+				"enablement": "activeCustomEditorId == resx.editor",
+				"title": "Resx: Update other resources",
+				"icon": "$(sync)"
 			}
-		]
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"command": "code-resx.updateOtherResources",
+					"group": "navigation",
+					"when": "activeCustomEditorId == resx.editor"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "rm -r ./out, ./view && node ./esbuild.js",
-		"watch": "tsc -watch -p ./",
+		"compile": "rm -r ./out, ./view && node ./esbuild.js && cp test-resx/empty.resx out",
+		"watch-web": "npm-run-all -p watch-web:*",
+		"watch-web:esbuild": "node esbuild.js --watch",
+		"watch-web:tsc": "tsc --noEmit --watch --project tsconfig.json",
 		"check-update": "ncu"
 	},
 	"devDependencies": {
-		"@types/node": "^22.9.3",
 		"@types/vscode": "^1.95.0",
 		"@typescript-eslint/eslint-plugin": "^8.15.0",
 		"@typescript-eslint/parser": "^8.15.0",
-		"@vscode/test-cli": "^0.0.10",
-		"@vscode/test-electron": "^2.4.1",
+		"@vscode/test-web": "^0.0.63",
 		"esbuild": "^0.24.0",
 		"eslint": "^9.15.0",
 		"fast-xml-parser": "^4.5.0",

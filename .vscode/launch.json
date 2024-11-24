@@ -17,6 +17,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
+			"preLaunchTask": "${defaultBuildTask}"
 		},
 		{
 			"name": "Extension Tests",
@@ -46,6 +47,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
+			"preLaunchTask": "${defaultBuildTask}"
 		},
 	]
 }

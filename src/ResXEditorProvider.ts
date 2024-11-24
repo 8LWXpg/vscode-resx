@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { XMLParser, XMLBuilder } from 'fast-xml-parser';
-import { version } from 'os';
+import { XMLParser, XMLBuilder, validationOptions } from 'fast-xml-parser';
 
 type XmlData = {
 	'@_name': string;
@@ -16,20 +15,13 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	}
 
 	public static readonly viewType = 'resx.editor';
-	private start = 0;
-	private indent = '';
-	private lineEnding = '';
-	private parser?: XMLParser;
-	private builder?: XMLBuilder;
-	private updateFromWebview = false;
-	private documentVersion = 1;
 
 	constructor(private readonly context: vscode.ExtensionContext) {}
 
 	// Called when custom editor is opened.
 	public async resolveCustomTextEditor(
 		document: vscode.TextDocument,
-		webviewPanel: vscode.WebviewPanel
+		webviewPanel: vscode.WebviewPanel,
 	): Promise<void> {
 		// Setup initial content for the webview
 		webviewPanel.webview.options = {
@@ -38,49 +30,63 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		};
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
+		let start = 0;
+		let indent = '';
+		let lineEnding = '';
+		let updateFromWebview = false;
+		let documentVersion = 1;
+		let parser: ResXParser;
+		let builder: ResXBuilder;
+
 		const text = document.getText();
 		// get position of last </resheader> tag
 		const tagPos = text.lastIndexOf('</resheader>');
 		// get indent
-		this.indent = text.substring(text.lastIndexOf('\n', tagPos) + 1, tagPos);
-		this.start = tagPos + '</resheader>'.length;
+		indent = text.substring(text.lastIndexOf('\n', tagPos) + 1, tagPos);
+		start = tagPos + '</resheader>'.length;
 		// get line ending
-		this.lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
-		this.start += this.lineEnding.length;
+		lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
+		start += lineEnding.length;
 
 		// parser, builder initialization
-		const options = {
-			ignoreAttributes: false,
-			attributeNamePrefix: '@_',
-		};
-		this.parser = new XMLParser({
-			// assume we only receive array of data
-			isArray: (tagName) => tagName === 'data',
-			...options,
-		});
-		this.builder = new XMLBuilder({
-			format: true,
-			indentBy: this.indent,
-			...options,
-		});
+		parser = new ResXParser();
+		builder = new ResXBuilder(indent, lineEnding);
 
-		function updateWebview(self: ResXEditorProvider, doc: vscode.TextDocument) {
+		function updateWebview(doc: vscode.TextDocument) {
 			const text = doc.getText();
 			webviewPanel.webview.postMessage({
 				type: 'update',
-				obj: self.xml2js(text.substring(self.start, text.lastIndexOf('</root>') - self.lineEnding.length)),
+				obj: parser.parse(text.substring(start, text.lastIndexOf('</root>') - lineEnding.length)),
 			});
+		}
+
+		function updateTextDocument(document: vscode.TextDocument, obj: XmlData[]) {
+			const edit = new vscode.WorkspaceEdit();
+
+			// delete comment if empty
+			for (const key in obj) {
+				if (obj[key].comment === '') {
+					delete obj[key].comment;
+				}
+			}
+
+			const output: string = builder.build(obj);
+			const end = document.getText().lastIndexOf('</root>');
+
+			edit.replace(document.uri, new vscode.Range(document.positionAt(start), document.positionAt(end)), output);
+
+			return vscode.workspace.applyEdit(edit);
 		}
 
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
 			// Undo and Redo fires another onDidChangeTextDocument event, so we need to check if the version is different
-			if (e.document.uri.toString() === document.uri.toString() && e.document.version !== this.documentVersion) {
-				if (this.updateFromWebview) {
-					this.updateFromWebview = false;
+			if (e.document.uri.toString() === document.uri.toString() && e.document.version !== documentVersion) {
+				if (updateFromWebview) {
+					updateFromWebview = false;
 				} else {
-					updateWebview(this, e.document);
+					updateWebview(e.document);
 				}
-				this.documentVersion = e.document.version;
+				documentVersion = e.document.version;
 			}
 		});
 
@@ -91,20 +97,20 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		webviewPanel.webview.onDidReceiveMessage((message) => {
 			switch (message.type) {
 				case 'update':
-					this.updateFromWebview = true;
-					this.updateTextDocument(document, message.obj);
+					updateFromWebview = true;
+					updateTextDocument(document, message.obj);
 					return;
 			}
 		});
 
-		updateWebview(this, document);
+		updateWebview(document);
 	}
 
 	private getHtmlForWebview(webview: vscode.Webview): string {
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.js'));
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.css'));
 		const sortableStyleUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this.context.extensionUri, 'view', 'sortable-base.min.css')
+			vscode.Uri.joinPath(this.context.extensionUri, 'view', 'sortable-base.min.css'),
 		);
 
 		return /* html */ `<!DOCTYPE html>
@@ -138,28 +144,20 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 </body>
 </html>`;
 	}
+}
 
-	private async updateTextDocument(document: vscode.TextDocument, obj: XmlData[]) {
-		const edit = new vscode.WorkspaceEdit();
-
-		// delete comment if empty
-		for (const key in obj) {
-			if (obj[key].comment === '') {
-				delete obj[key].comment;
-			}
-		}
-
-		const output: string = this.js2xml(obj);
-		const end = document.getText().lastIndexOf('</root>');
-
-		edit.replace(document.uri, new vscode.Range(document.positionAt(this.start), document.positionAt(end)), output);
-
-		return vscode.workspace.applyEdit(edit);
+class ResXParser extends XMLParser {
+	constructor() {
+		super({
+			ignoreAttributes: false,
+			attributeNamePrefix: '@_',
+			isArray: (tagName) => tagName === 'data',
+		});
 	}
 
-	private xml2js(xml: string) {
+	public parse(resxData: string) {
 		try {
-			const data: XmlData[] = this.parser?.parse(xml).data;
+			const data: XmlData[] = super.parse(resxData).data;
 			data.forEach((obj) => {
 				delete obj['@_xml:space'];
 			});
@@ -176,8 +174,22 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			return [];
 		}
 	}
+}
 
-	private js2xml(data: XmlData[]) {
+class ResXBuilder extends XMLBuilder {
+	private readonly lineEnding: string;
+
+	constructor(indent: string, lineEnding: string) {
+		super({
+			ignoreAttributes: false,
+			attributeNamePrefix: '@_',
+			format: true,
+			indentBy: indent,
+		});
+		this.lineEnding = lineEnding;
+	}
+
+	public build(data: XmlData[]) {
 		try {
 			if (data.length === 0) {
 				return '';
@@ -185,7 +197,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			data.forEach((obj) => {
 				obj['@_xml:space'] = 'preserve';
 			});
-			const formatted: string = this.builder?.build({ a: { data: data } });
+			const formatted: string = super.build({ a: { data: data } });
 			// replace '\n' it with the document line ending
 			// resx supports " and ' without escaping
 			return formatted
