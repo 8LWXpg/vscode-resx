@@ -1,5 +1,9 @@
 # Change Log
 
+## [Unreleased]
+
+- Reset other table header sorting indicator after sorting by other columns.
+
 ## [0.4.1]
 
 - Remove unused file in extension package.
