@@ -88,6 +88,7 @@
 		"check-update": "ncu"
 	},
 	"devDependencies": {
+		"@types/node": "^22.9.3",
 		"@types/vscode": "^1.86.0",
 		"@typescript-eslint/eslint-plugin": "^8.15.0",
 		"@typescript-eslint/parser": "^8.15.0",
