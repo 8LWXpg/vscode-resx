@@ -15,19 +15,9 @@ const container = /** @type {HTMLTableSectionElement} */ (document.querySelector
 function inputEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
+	const index = self.getAttribute('data-index');
 	const name = self.querySelector('#name').value;
-	const value = self.querySelector('#value').value || undefined;
-	const comment = self.querySelector('#comment').value || undefined;
-	let current = obj.find((ele) => ele['value'] === value && ele['comment'] === comment);
-	if (!current) {
-		if (!value) {
-			return;
-		}
-		current = { '@_name': name, value, comment };
-		obj.push(current);
-	} else {
-		current['@_name'] = name;
-	}
+	obj[index]['@_name'] = name;
 	setStateAndPostUpdate(obj);
 }
 
@@ -36,21 +26,21 @@ function textareaEvent(self) {
 	autoGrow(self);
 	/** @type {State} */
 	let { obj } = vscode.getState();
-	const name = self.querySelector('#name').value;
+	const index = self.getAttribute('data-index');
 	const value = self.querySelector('#value').value || undefined;
 	const comment = self.querySelector('#comment').value || undefined;
-	let current = obj.find((ele) => ele['@_name'] === name);
-	if (!current) {
-		current = { '@_name': name, value };
-		obj.push(current);
-	} else {
-		current.value = value;
-	}
-	current.comment = comment;
+	obj[index].value = value;
+	obj[index].comment = comment;
 	setStateAndPostUpdate(obj);
 }
 
+/**
+ * Make elements in row grow with textarea height
+ *
+ * @param {HTMLTableRowElement} row
+ */
 function autoGrow(row) {
+	/** @type {(HTMLInputElement | HTMLTextAreaElement)[]} */
 	let inputs = Array.from(row.querySelectorAll('.input'));
 	inputs.forEach((ele) => {
 		ele.style.height = '5px';
@@ -102,12 +92,13 @@ function rowHtml(name, value, comment) {
  */
 function updateContent(obj) {
 	container.innerHTML = '';
-	obj.forEach((ele) => {
+	obj.forEach((ele, i) => {
 		const comment = (ele.comment || '').replaceAll('"', '&quot;');
 		const value = (ele.value || '').replaceAll('"', '&quot;');
 		const element = document.createElement('tr');
 		container.appendChild(element);
 		element.innerHTML = rowHtml(ele['@_name'], value, comment);
+		element.setAttribute('data-index', i.toString());
 		autoGrow(element);
 	});
 }

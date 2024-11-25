@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Reset other table header sorting indicator after sorting by other columns.
+- Fixed webview and document object imparity.
+- Added command `Update other resources in same folder`.
 
 ## [0.4.1]
 
