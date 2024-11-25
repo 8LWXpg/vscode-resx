@@ -63,8 +63,8 @@
 			{
 				"command": "code-resx.updateOtherResources",
 				"enablement": "activeCustomEditorId == resx.editor",
-				"title": "Update other resources in same folder",
-				"category": "Resx",
+				"title": "Update Other Resources in Same Folder",
+				"category": "ResX",
 				"icon": "$(sync)"
 			}
 		],
@@ -80,14 +80,15 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "rm -r ./out, ./view && node ./esbuild.js && cp test-resx/empty.resx out",
+		"compile": "rm -r ./out, ./view && node ./esbuild.js --production && cp test-resx/empty.resx out",
 		"watch-web": "npm-run-all -p watch-web:*",
 		"watch-web:esbuild": "node esbuild.js --watch",
 		"watch-web:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
 		"check-update": "ncu"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.95.0",
+		"@types/vscode": "^1.86.0",
 		"@typescript-eslint/eslint-plugin": "^8.15.0",
 		"@typescript-eslint/parser": "^8.15.0",
 		"@vscode/test-web": "^0.0.63",

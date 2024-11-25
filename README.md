@@ -20,3 +20,8 @@ A visual editor for .resx files
 - **Sync with document:** change in document will be reflected in the editor immediately, and vice versa.
 - **Small package size:** less than 20KiB.
 - **Web extension**: support on the web (vscode.dev, GitHub Codespaces).
+
+## Commands
+
+- `ResX: Create Empty File`
+- `ResX: Update Other Resources in Same Folder` - also on top right icon.

@@ -4,7 +4,7 @@
 
 - Reset other table header sorting indicator after sorting by other columns.
 - Fixed webview and document object imparity.
-- Added command `Update other resources in same folder`.
+- Added command `Update other resources in same folder` (top right icon after opening resx file).
 
 ## [0.4.1]
 
