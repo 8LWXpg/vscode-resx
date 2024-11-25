@@ -1,16 +1,12 @@
 import * as vscode from 'vscode';
-import { ResXEditorProvider } from './ResXEditorProvider';
+import { ResXDocument, ResXEditorProvider, activeEditor, XmlData } from './ResXEditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(ResXEditorProvider.register(context));
 	context.subscriptions.push(
 		vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)),
 	);
-	context.subscriptions.push(
-		vscode.commands.registerCommand('code-resx.updateOtherResources', (uri?: vscode.Uri) =>
-			updateOtherResources(context, uri),
-		),
-	);
+	context.subscriptions.push(vscode.commands.registerCommand('code-resx.updateOtherResources', updateOtherResources));
 }
 
 async function createEmptyFile(context: vscode.ExtensionContext) {
@@ -26,12 +22,37 @@ async function createEmptyFile(context: vscode.ExtensionContext) {
 	}
 }
 
-function updateOtherResources(context: vscode.ExtensionContext, uri?: vscode.Uri) {
-	const editorUri = uri || vscode.window.activeTextEditor?.document.uri;
+async function updateOtherResources(uri?: vscode.Uri) {
+	const editorUri = uri || activeEditor;
 
 	if (!editorUri) {
+		vscode.window.showWarningMessage('No active editor');
 		return;
 	}
+
+	const parent = vscode.Uri.joinPath(editorUri, '..');
+	const mainFile = await ResXDocument.fromUri(editorUri);
+	const otherFiles = await Promise.all(
+		(await vscode.workspace.fs.readDirectory(parent))
+			.filter(([name, type]) => type === vscode.FileType.File && name.endsWith('.resx'))
+			.map(([name, _]) => vscode.Uri.joinPath(parent, name))
+			.filter((file) => file.toString() !== editorUri.toString())
+			.map((e) => ResXDocument.fromUri(e)),
+	);
+
+	const names = mainFile.parse().map((e) => e['@_name']);
+	otherFiles.forEach((e) => {
+		let data = e.parse();
+		const otherNames = data.map((e) => e['@_name']);
+		const uniqueElements = names.filter((e) => !otherNames.includes(e));
+		e.build(
+			data.concat(
+				uniqueElements.map((e) => {
+					return { '@_name': e, value: '' } as XmlData;
+				}),
+			),
+		);
+	});
 }
 
 export function deactivate() {}

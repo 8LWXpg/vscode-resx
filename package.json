@@ -57,12 +57,14 @@
 		"commands": [
 			{
 				"command": "code-resx.createEmptyFile",
-				"title": "ResX: Create Empty File"
+				"title": "Create Empty File",
+				"category": "ResX"
 			},
 			{
 				"command": "code-resx.updateOtherResources",
 				"enablement": "activeCustomEditorId == resx.editor",
-				"title": "Resx: Update other resources",
+				"title": "Update other resources in same folder",
+				"category": "Resx",
 				"icon": "$(sync)"
 			}
 		],

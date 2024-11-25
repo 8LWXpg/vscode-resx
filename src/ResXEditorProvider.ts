@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
-import { XMLParser, XMLBuilder, validationOptions } from 'fast-xml-parser';
+import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
-type XmlData = {
+export let activeEditor: vscode.Uri | null = null;
+
+export type XmlData = {
 	'@_name': string;
 	value: string;
 	comment?: string;
@@ -60,17 +62,9 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			});
 		}
 
-		function updateTextDocument(document: vscode.TextDocument, obj: XmlData[]) {
+		function updateTextDocument(document: vscode.TextDocument, data: XmlData[]) {
 			const edit = new vscode.WorkspaceEdit();
-
-			// delete comment if empty
-			for (const key in obj) {
-				if (obj[key].comment === '') {
-					delete obj[key].comment;
-				}
-			}
-
-			const output: string = builder.build(obj);
+			const output: string = builder.build(data);
 			const end = document.getText().lastIndexOf('</root>');
 
 			edit.replace(document.uri, new vscode.Range(document.positionAt(start), document.positionAt(end)), output);
@@ -90,6 +84,15 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			}
 		});
 
+		webviewPanel.onDidChangeViewState((e) => {
+			if (e.webviewPanel.active) {
+				activeEditor = document.uri;
+				// webview.js does not load in background,
+				// so we need to update it incase the document is changed in that period.
+				updateWebview(document);
+			}
+		});
+
 		webviewPanel.onDidDispose(() => {
 			changeDocumentSubscription.dispose();
 		});
@@ -103,6 +106,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			}
 		});
 
+		activeEditor = document.uri;
 		updateWebview(document);
 	}
 
@@ -146,6 +150,59 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	}
 }
 
+export class ResXDocument {
+	private constructor(
+		private indent: string,
+		private lineEnding: string,
+		private text: string,
+		private start: number,
+		private document: vscode.TextDocument,
+		private parser: ResXParser,
+		private builder: ResXBuilder,
+	) {}
+
+	static async fromUri(uri: vscode.Uri): Promise<ResXDocument> {
+		const document = await vscode.workspace.openTextDocument(uri);
+		const text = document.getText();
+		// get position of last </resheader> tag
+		const tagPos = text.lastIndexOf('</resheader>');
+		// get indent
+		const indent = text.substring(text.lastIndexOf('\n', tagPos) + 1, tagPos);
+		let start = tagPos + '</resheader>'.length;
+		// get line ending
+		const lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
+		start += lineEnding.length;
+
+		// parser, builder initialization
+		const parser = new ResXParser();
+		const builder = new ResXBuilder(indent, lineEnding);
+
+		return new ResXDocument(indent, lineEnding, text, start, document, parser, builder);
+	}
+
+	public parse(): XmlData[] {
+		return this.parser.parse(
+			this.text.substring(this.start, this.text.lastIndexOf('</root>') - this.lineEnding.length),
+		);
+	}
+
+	// update resx with new content
+	public build(data: XmlData[]): Thenable<boolean> {
+		const edit = new vscode.WorkspaceEdit();
+		const output: string = this.builder.build(data);
+		const end = this.text.lastIndexOf('</root>');
+
+		edit.replace(
+			this.document.uri,
+			new vscode.Range(this.document.positionAt(this.start), this.document.positionAt(end)),
+			output,
+		);
+		vscode.workspace.applyEdit(edit);
+
+		return this.document.save();
+	}
+}
+
 class ResXParser extends XMLParser {
 	constructor() {
 		super({
@@ -155,7 +212,7 @@ class ResXParser extends XMLParser {
 		});
 	}
 
-	public parse(resxData: string) {
+	public parse(resxData: string): XmlData[] {
 		try {
 			const data: XmlData[] = super.parse(resxData).data;
 			data.forEach((obj) => {
@@ -189,7 +246,14 @@ class ResXBuilder extends XMLBuilder {
 		this.lineEnding = lineEnding;
 	}
 
-	public build(data: XmlData[]) {
+	public build(data: XmlData[]): string {
+		// delete comment if empty
+		for (const key in data) {
+			if (data[key].comment === '') {
+				delete data[key].comment;
+			}
+		}
+
 		try {
 			if (data.length === 0) {
 				return '';
