@@ -7,6 +7,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)),
 	);
 	context.subscriptions.push(vscode.commands.registerCommand('code-resx.updateOtherResources', updateOtherResources));
+	context.subscriptions.push(vscode.commands.registerCommand('code-resx.syncWithMainResource', syncWithMainResource));
 }
 
 async function createEmptyFile(context: vscode.ExtensionContext) {
@@ -40,8 +41,31 @@ async function updateOtherResources(uri?: vscode.Uri) {
 			.map((e) => ResXDocument.fromUri(e)),
 	);
 
-	const names = mainFile.parse().map((e) => e['@_name']);
-	otherFiles.forEach((e) => {
+	syncFiles(mainFile, otherFiles);
+}
+
+async function syncWithMainResource(uri?: vscode.Uri) {
+	const editorUri = uri || activeEditor;
+
+	if (!editorUri) {
+		vscode.window.showWarningMessage('No active editor');
+		return;
+	}
+
+	const currentFile = await ResXDocument.fromUri(editorUri);
+	const main = editorUri.toString().replace(/\.[a-z]{2}(-[A-Z]{2})?\.resx$/, '.resx');
+	if (main === editorUri.toString()) {
+		vscode.window.showInformationMessage("does not match pattern '.<locale>.resx'");
+		return;
+	}
+
+	const mainFile = await ResXDocument.fromUri(main);
+	syncFiles(mainFile, [currentFile]);
+}
+
+function syncFiles(main: ResXDocument, other: ResXDocument[]) {
+	const names = main.parse().map((e) => e['@_name']);
+	other.forEach((e) => {
 		let data = e.parse();
 		const otherNames = data.map((e) => e['@_name']);
 		const uniqueElements = names.filter((e) => !otherNames.includes(e));

@@ -161,7 +161,10 @@ export class ResXDocument {
 		private builder: ResXBuilder,
 	) {}
 
-	static async fromUri(uri: vscode.Uri): Promise<ResXDocument> {
+	static async fromUri(uri: vscode.Uri | string): Promise<ResXDocument> {
+		if (typeof uri === 'string') {
+			uri = vscode.Uri.parse(uri);
+		}
 		const document = await vscode.workspace.openTextDocument(uri);
 		const text = document.getText();
 		// get position of last </resheader> tag

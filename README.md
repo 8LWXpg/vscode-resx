@@ -24,4 +24,5 @@ A visual editor for .resx files
 ## Commands
 
 - `ResX: Create Empty File`
-- `ResX: Update Other Resources in Same Folder` - also on top right icon.
+- `ResX: Update Other Resources in Same Folder`
+- `Sync with Main Resource in the Same Folder` - also on top right icon, only supports file with name `\.[a-z]{2}(-[A-Z]{2})?\.resx`

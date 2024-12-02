@@ -63,7 +63,13 @@
 			{
 				"command": "code-resx.updateOtherResources",
 				"enablement": "activeCustomEditorId == resx.editor",
-				"title": "Update Other Resources in Same Folder",
+				"title": "Update Other Resources in the Same Folder",
+				"category": "ResX"
+			},
+			{
+				"command": "code-resx.syncWithMainResource",
+				"enablement": "activeCustomEditorId == resx.editor",
+				"title": "Sync with Main Resource in the Same Folder",
 				"category": "ResX",
 				"icon": "$(sync)"
 			}
@@ -71,7 +77,7 @@
 		"menus": {
 			"editor/title": [
 				{
-					"command": "code-resx.updateOtherResources",
+					"command": "code-resx.syncWithMainResource",
 					"group": "navigation",
 					"when": "activeCustomEditorId == resx.editor"
 				}

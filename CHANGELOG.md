@@ -1,6 +1,11 @@
 # Change Log
 
-## [Unreleased]
+## [0.6.0]
+
+- Added command `Sync with Main Resource in the Same Folder`.
+- Changed top right icon to command `Sync with Main Resource in the Same Folder`.
+
+## [0.5.0]
 
 - Reset other table header sorting indicator after sorting by other columns.
 - Fixed webview and document object imparity.
