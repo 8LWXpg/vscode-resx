@@ -76,8 +76,6 @@ textarea::placeholder {
 textarea {
     resize: none;
     grid-auto-rows: max-content;
-    /* overflow-x: auto; */
-    /* white-space: nowrap; */
 }
 
 table {
@@ -106,4 +104,8 @@ table thead tr {
     width: 100%;
     height: 100%;
     text-align: center;
+}
+
+.table-draggable tr:not(thead tr) {
+    cursor: grabbing;
 }

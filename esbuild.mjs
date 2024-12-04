@@ -1,6 +1,6 @@
 // @ts-check
-const esbuild = require('esbuild');
-const { isAwaitKeyword } = require('typescript');
+import * as esbuild from 'esbuild';
+import { sassPlugin } from 'esbuild-sass-plugin';
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
@@ -38,6 +38,7 @@ const extensionConfig = {
 	entryPoints: ['./src/extension.ts'],
 	outdir: './out',
 	external: ['vscode'],
+	plugins: [esbuildProblemMatcherPlugin],
 };
 
 /** @type {import('esbuild').BuildOptions} */
@@ -45,28 +46,29 @@ const webviewConfig = {
 	minify: production,
 	entryPoints: ['./editor/webview.js'],
 	outdir: './view',
+	plugins: [esbuildProblemMatcherPlugin],
 };
 
 /** @type {import('esbuild').BuildOptions} */
 const webviewCssConfig = {
 	minify: production,
-	entryPoints: ['./editor/webview.css', './editor/sortable-base.min.css'],
+	entryPoints: ['./editor/webview.scss', './editor/sortable-base.min.css'],
 	outdir: './view',
+	plugins: [sassPlugin(), esbuildProblemMatcherPlugin],
 };
 
 async function main() {
-	const ctx = await esbuild.context({
-		...extensionConfig,
-		plugins: [esbuildProblemMatcherPlugin],
-	});
+	const ctx = await Promise.all([
+		esbuild.context(extensionConfig),
+		esbuild.context(webviewConfig),
+		esbuild.context(webviewCssConfig),
+	]);
 
-	await esbuild.build(webviewConfig);
-	await esbuild.build(webviewCssConfig);
 	if (watch) {
-		await ctx.watch();
+		await Promise.all(ctx.map((c) => c.watch()));
 	} else {
-		await ctx.rebuild();
-		await ctx.dispose();
+		await Promise.all(ctx.map((c) => c.rebuild()));
+		await Promise.all(ctx.map((c) => c.dispose()));
 	}
 }
 

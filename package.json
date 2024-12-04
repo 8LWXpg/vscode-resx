@@ -88,7 +88,7 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "rm -r ./out, ./view && node ./esbuild.js --production && cp test-resx/empty.resx out",
 		"watch-web": "npm-run-all -p watch-web:*",
-		"watch-web:esbuild": "node esbuild.js --watch",
+		"watch-web:esbuild": "node esbuild.mjs --watch",
 		"watch-web:tsc": "tsc --noEmit --watch --project tsconfig.json",
 		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
 		"check-update": "ncu"
@@ -100,6 +100,7 @@
 		"@typescript-eslint/parser": "^8.15.0",
 		"@vscode/test-web": "^0.0.63",
 		"esbuild": "^0.24.0",
+		"esbuild-sass-plugin": "^3.3.1",
 		"eslint": "^9.15.0",
 		"fast-xml-parser": "^4.5.0",
 		"prettier": "^3.3.3",

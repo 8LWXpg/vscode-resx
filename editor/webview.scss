@@ -1,0 +1,112 @@
+:root {
+	--container-padding: 20px;
+	--input-padding-vertical: 6px;
+	--input-padding-horizontal: 4px;
+	--input-margin-vertical: 4px;
+	--input-margin-horizontal: 0;
+}
+
+@mixin font-styles {
+	color: var(--vscode-foreground);
+	font-size: var(--vscode-font-size);
+	font-weight: var(--vscode-font-weight);
+	font-family: var(--vscode-font-family);
+}
+
+@mixin input-styles {
+	display: block;
+	width: 100%;
+	border: none;
+	font-family: var(--vscode-font-family);
+	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+	box-sizing: border-box;
+	color: var(--vscode-input-foreground);
+	outline-color: var(--vscode-input-border);
+	background-color: var(--vscode-input-background);
+}
+
+body {
+	padding: 0 var(--container-padding);
+	background-color: var(--vscode-editor-background);
+	@include font-styles;
+
+	> * {
+		margin-block-start: var(--input-margin-vertical);
+		margin-block-end: var(--input-margin-vertical);
+	}
+}
+
+*:focus {
+	outline-color: var(--vscode-focusBorder) !important;
+}
+
+button {
+	border: none;
+	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+	width: 100%;
+	border-radius: 2pt;
+	text-align: center;
+	outline: 1px solid transparent;
+	outline-offset: 2px !important;
+	color: var(--vscode-button-foreground);
+	background: var(--vscode-button-background);
+
+	&:hover {
+		cursor: pointer;
+		background: var(--vscode-button-hoverBackground);
+	}
+
+	&:focus {
+		outline-color: var(--vscode-focusBorder);
+	}
+
+	&.secondary {
+		color: var(--vscode-button-secondaryForeground);
+		background: var(--vscode-button-secondaryBackground);
+
+		&:hover {
+			background: var(--vscode-button-secondaryHoverBackground);
+		}
+	}
+}
+
+input,
+textarea {
+	@include input-styles;
+}
+
+textarea {
+	resize: none;
+	grid-auto-rows: max-content;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+
+	th,
+	td {
+		text-align: left;
+		padding: 6px;
+	}
+
+	tr:not(:last-child) {
+		border-bottom: 1px solid;
+		border-top: 1px solid transparent;
+	}
+
+	thead tr {
+		border-bottom: 2px solid;
+	}
+
+	&.table-draggable tr:not(thead tr) {
+		cursor: grabbing;
+	}
+}
+
+.drop {
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
