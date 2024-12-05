@@ -1,15 +1,16 @@
 // @ts-check
 
 /**
- * @typedef {{ '@_name': string; value: string; comment?: string }[]} WebviewState
+ * @typedef {{ '@_name': string; value: string; comment?: string }} XMLData
  *
- * @typedef {{ obj: WebviewState }} State
+ * @typedef {{ obj: XMLData[] }} State
  */
 
 // @ts-ignore
 const vscode = acquireVsCodeApi();
 
 const container = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
+const table = /** @type {HTMLTableElement} */ (document.getElementById('table-draggable'));
 
 /** Handle the input event for inputs, trickier because name must be unique */
 function inputEvent(self) {
@@ -51,21 +52,19 @@ function autoGrow(row) {
 	});
 }
 
+/**
+ * Calls on click delete
+ *
+ * @param {HTMLTableRowElement} self
+ */
 function deleteEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
-	const value = self.querySelector('#name').value;
-	obj = obj.filter((ele) => ele['@_name'] !== value);
+	// @ts-ignore
+	const index = Number.parseInt(self.getAttribute('data-index'));
+	obj.splice(index, 1);
 	self.remove();
-	updateContent(obj);
 	setStateAndPostUpdate(obj);
-}
-
-function addContent() {
-	const element = document.createElement('tr');
-	container.appendChild(element);
-	element.innerHTML = rowHtml('', '', '');
-	element.scrollIntoView();
 }
 
 /**
@@ -86,19 +85,42 @@ function rowHtml(name, value, comment) {
 }
 
 /**
+ * @param {number} index
+ * @param {string} name
+ * @param {string} value
+ * @param {string} comment
+ * @returns {HTMLTableRowElement}
+ */
+function addRow(index, name, value, comment) {
+	const element = document.createElement('tr');
+	element.draggable = true;
+	container.appendChild(element);
+	element.innerHTML = rowHtml(name, value, comment);
+	element.setAttribute('data-index', index.toString());
+	return element;
+}
+
+/** Calls on click add */
+function addContent() {
+	/** @type {XMLData[]} */
+	const obj = vscode.getState().obj;
+	const element = addRow(obj.length, '', '', '');
+	obj.push({ '@_name': '', value: '' });
+	element.scrollIntoView();
+	setStateAndPostUpdate(obj);
+}
+
+/**
  * Update content of the table
  *
- * @param {WebviewState} obj
+ * @param {XMLData[]} obj
  */
 function updateContent(obj) {
 	container.innerHTML = '';
 	obj.forEach((ele, i) => {
 		const comment = (ele.comment || '').replaceAll('"', '&quot;');
 		const value = (ele.value || '').replaceAll('"', '&quot;');
-		const element = document.createElement('tr');
-		container.appendChild(element);
-		element.innerHTML = rowHtml(ele['@_name'], value, comment);
-		element.setAttribute('data-index', i.toString());
+		const element = addRow(i, ele['@_name'], value, comment);
 		autoGrow(element);
 	});
 }
@@ -145,7 +167,7 @@ let sortFlags = {
 
 /** @param {'value' | 'comment' | '@_name'} key */
 function sortObject(self, key) {
-	/** @type {WebviewState} */
+	/** @type {XMLData[]} */
 	let obj = vscode.getState()?.obj;
 	obj.sort((a, b) => (b[key] || '').localeCompare(a[key] || ''));
 
@@ -186,7 +208,7 @@ function sortComment(self) {
 /**
  * Update webview state then post an update message
  *
- * @param {WebviewState} obj
+ * @param {XMLData[]} obj
  */
 function setStateAndPostUpdate(obj) {
 	vscode.setState({ obj: obj });

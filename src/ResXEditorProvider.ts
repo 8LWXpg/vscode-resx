@@ -152,7 +152,6 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 
 export class ResXDocument {
 	private constructor(
-		private indent: string,
 		private lineEnding: string,
 		private text: string,
 		private start: number,
@@ -180,7 +179,7 @@ export class ResXDocument {
 		const parser = new ResXParser();
 		const builder = new ResXBuilder(indent, lineEnding);
 
-		return new ResXDocument(indent, lineEnding, text, start, document, parser, builder);
+		return new ResXDocument(lineEnding, text, start, document, parser, builder);
 	}
 
 	public parse(): XmlData[] {
@@ -221,11 +220,6 @@ class ResXParser extends XMLParser {
 			data.forEach((obj) => {
 				delete obj['@_xml:space'];
 			});
-			data.forEach((obj) => {
-				if (obj.comment === '') {
-					delete obj.comment;
-				}
-			});
 
 			return data;
 		} catch (e) {
@@ -250,13 +244,6 @@ class ResXBuilder extends XMLBuilder {
 	}
 
 	public build(data: XmlData[]): string {
-		// delete comment if empty
-		for (const key in data) {
-			if (data[key].comment === '') {
-				delete data[key].comment;
-			}
-		}
-
 		try {
 			if (data.length === 0) {
 				return '';
