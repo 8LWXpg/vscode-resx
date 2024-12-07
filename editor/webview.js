@@ -10,7 +10,6 @@
 const vscode = acquireVsCodeApi();
 
 const container = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
-const table = /** @type {HTMLTableElement} */ (document.getElementById('table-draggable'));
 
 /** Handle the input event for inputs, trickier because name must be unique */
 function inputEvent(self) {
@@ -36,6 +35,21 @@ function textareaEvent(self) {
 }
 
 /**
+ * Calls on click delete
+ *
+ * @param {HTMLTableRowElement} self
+ */
+function deleteEvent(self) {
+	/** @type {State} */
+	let { obj } = vscode.getState();
+	// @ts-ignore
+	const index = Number.parseInt(self.getAttribute('data-index'));
+	obj.splice(index, 1);
+	self.remove();
+	setStateAndPostUpdate(obj);
+}
+
+/**
  * Make elements in row grow with textarea height
  *
  * @param {HTMLTableRowElement} row
@@ -50,21 +64,6 @@ function autoGrow(row) {
 	inputs.forEach((ele) => {
 		ele.style.height = maxHeight + 'px';
 	});
-}
-
-/**
- * Calls on click delete
- *
- * @param {HTMLTableRowElement} self
- */
-function deleteEvent(self) {
-	/** @type {State} */
-	let { obj } = vscode.getState();
-	// @ts-ignore
-	const index = Number.parseInt(self.getAttribute('data-index'));
-	obj.splice(index, 1);
-	self.remove();
-	setStateAndPostUpdate(obj);
 }
 
 /**
@@ -85,6 +84,8 @@ function rowHtml(name, value, comment) {
 }
 
 /**
+ * Create <tr> and append to `container` and returns it.
+ *
  * @param {number} index
  * @param {string} name
  * @param {string} value
@@ -92,21 +93,21 @@ function rowHtml(name, value, comment) {
  * @returns {HTMLTableRowElement}
  */
 function addRow(index, name, value, comment) {
-	const element = document.createElement('tr');
-	element.draggable = true;
-	container.appendChild(element);
-	element.innerHTML = rowHtml(name, value, comment);
-	element.setAttribute('data-index', index.toString());
-	return element;
+	const row = document.createElement('tr');
+	row.draggable = true;
+	container.appendChild(row);
+	row.innerHTML = rowHtml(name, value, comment);
+	row.setAttribute('data-index', index.toString());
+	return row;
 }
 
 /** Calls on click add */
 function addContent() {
 	/** @type {XMLData[]} */
 	const obj = vscode.getState().obj;
-	const element = addRow(obj.length, '', '', '');
+	const row = addRow(obj.length, '', '', '');
 	obj.push({ '@_name': '', value: '' });
-	element.scrollIntoView();
+	row.scrollIntoView();
 	setStateAndPostUpdate(obj);
 }
 
@@ -120,8 +121,8 @@ function updateContent(obj) {
 	obj.forEach((ele, i) => {
 		const comment = (ele.comment || '').replaceAll('"', '&quot;');
 		const value = (ele.value || '').replaceAll('"', '&quot;');
-		const element = addRow(i, ele['@_name'], value, comment);
-		autoGrow(element);
+		const row = addRow(i, ele['@_name'], value, comment);
+		autoGrow(row);
 	});
 }
 
