@@ -83,30 +83,24 @@ table {
 	}
 
 	td {
-		.drop {
+		&.drop {
 			cursor: pointer;
-			width: 100%;
-			height: 100%;
 			text-align: center;
+			user-select: none;
 		}
 
-		.drag {
+		&.handle {
 			cursor: grab;
-		}
-	}
-
-	& {
-		.dragging {
-			opacity: 0.5;
-			cursor: grabbing;
+			text-align: center;
+			user-select: none;
 		}
 	}
 
 	tbody tr {
 		cursor: grab;
 
-		&:active {
-			cursor: grabbing;
+		&.dragging {
+			opacity: 0.5;
 		}
 
 		&:not(:last-child) {

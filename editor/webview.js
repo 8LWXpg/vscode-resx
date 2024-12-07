@@ -10,6 +10,8 @@
 const vscode = acquireVsCodeApi();
 
 const container = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
+/** @type {HTMLTableRowElement | null} */
+let dragging;
 
 /** Handle the input event for inputs, trickier because name must be unique */
 function inputEvent(self) {
@@ -52,6 +54,42 @@ function deleteEvent(self) {
 	setStateAndPostUpdate(obj);
 }
 
+/** @param {DragEvent} event */
+function handleDragStart(event) {
+	// event.dataTransfer.effectAllowed = 'move';
+	// @ts-ignore
+	dragging = event.target.closest('tr');
+	dragging?.classList.add('dragging');
+}
+
+/** @param {DragEvent} event */
+function handleDragOver(event) {
+	event.preventDefault(); // Allow dropping
+
+	// @ts-ignore
+	const draggingIndex = Number.parseInt(dragging.getAttribute('data-index'));
+	// @ts-ignore
+	const targetRow = event.target.closest('tr');
+	const targetIndex = Number.parseInt(targetRow.getAttribute('data-index'));
+	if (targetIndex > draggingIndex) {
+		targetRow.after(dragging);
+	} else {
+		targetRow.before(dragging);
+	}
+	dragging?.setAttribute('data-index', targetIndex.toString());
+	targetRow.setAttribute('data-index', draggingIndex.toString());
+
+	/** @type {XMLData[]} */
+	const obj = vscode.getState().obj;
+	[obj[draggingIndex], obj[targetIndex]] = [obj[targetIndex], obj[draggingIndex]];
+}
+
+function handleDragEnd() {
+	dragging?.classList.remove('dragging');
+	dragging = null;
+	setStateAndPostUpdate(vscode.getState().obj);
+}
+
 /**
  * Make elements in row grow with textarea height
  *
@@ -79,10 +117,11 @@ function autoGrow(row) {
  */
 function rowHtml(name, value, comment) {
 	return /* html */ `
+<td class="handle">≡</td>
 <td><input class="input" id="name" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
 <td><textarea rows="1" class="input" id="value" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${value}</textarea></td>
 <td><textarea rows="1" class="input" id="comment" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${comment}</textarea></td>
-<td><div class="drop" onclick="deleteEvent(this.parentElement.parentElement)">✖</div></td>
+<td class="drop" onclick="deleteEvent(this.parentElement)">✖</td>
 `;
 }
 
@@ -98,6 +137,9 @@ function rowHtml(name, value, comment) {
 function addRow(index, name, value, comment) {
 	const row = document.createElement('tr');
 	row.draggable = true;
+	row.ondragstart = handleDragStart;
+	row.ondragover = handleDragOver;
+	row.ondragend = handleDragEnd;
 	container.appendChild(row);
 	row.innerHTML = rowHtml(name, value, comment);
 	row.setAttribute('data-index', index.toString());

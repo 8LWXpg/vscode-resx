@@ -132,6 +132,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 <body>
 	<table class="sortable">
 		<thead>
+			<th class="no-sort"></th>
 			<th onclick="sortName(this)">Name</th>
 			<th onclick="sortValue(this)">Value</th>
 			<th onclick="sortComment(this)">Comment</th>
