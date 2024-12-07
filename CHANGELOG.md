@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.7.0]
+
+- Added functionality to rearrange rows by dragging.
+- Fixed delete event.
+
 ## [0.6.0]
 
 - Added command `Sync with Main Resource in the Same Folder`.

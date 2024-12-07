@@ -25,7 +25,7 @@ function inputEvent(self) {
 
 /** Handle the input event for textarea */
 function textareaEvent(self) {
-	autoGrow(self);
+	resize(self);
 	/** @type {State} */
 	let { obj } = vscode.getState();
 	const index = self.getAttribute('data-index');
@@ -48,7 +48,7 @@ function deleteEvent(self) {
 	const index = Number.parseInt(self.getAttribute('data-index'));
 	obj.splice(index, 1);
 	self.remove();
-	Array.from(container.getElementsByTagName('tr')).forEach((e, i) => {
+	Array.prototype.forEach.call(container.getElementsByTagName('tr'), (e, i) => {
 		e.setAttribute('data-index', i.toString());
 	});
 	setStateAndPostUpdate(obj);
@@ -91,11 +91,11 @@ function handleDragEnd() {
 }
 
 /**
- * Make elements in row grow with textarea height
+ * Resize the row to fit the content
  *
  * @param {HTMLTableRowElement} row
  */
-function autoGrow(row) {
+function resize(row) {
 	/** @type {(HTMLInputElement | HTMLTextAreaElement)[]} */
 	let inputs = Array.from(row.querySelectorAll('.input'));
 	inputs.forEach((ele) => {
@@ -143,6 +143,7 @@ function addRow(index, name, value, comment) {
 	container.appendChild(row);
 	row.innerHTML = rowHtml(name, value, comment);
 	row.setAttribute('data-index', index.toString());
+	resize(row);
 	return row;
 }
 
@@ -167,7 +168,7 @@ function updateContent(obj) {
 		const comment = (ele.comment || '').replaceAll('"', '&quot;');
 		const value = (ele.value || '').replaceAll('"', '&quot;');
 		const row = addRow(i, ele['@_name'], value, comment);
-		autoGrow(row);
+		resize(row);
 	});
 }
 
@@ -219,12 +220,10 @@ function sortObject(self, key) {
 
 	// Reset all other th elements
 	const allHeaders = self.parentElement?.getElementsByTagName('th');
-	if (allHeaders) {
-		Array.from(allHeaders).forEach((header) => {
-			if (header !== self) {
-				header.removeAttribute('aria-sort');
-			}
-		});
+	for (const header of allHeaders) {
+		if (header !== self) {
+			header.removeAttribute('aria-sort');
+		}
 	}
 
 	if (sortFlags[key]) {

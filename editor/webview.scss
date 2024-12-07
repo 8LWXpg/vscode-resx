@@ -70,6 +70,8 @@ textarea {
 textarea {
 	resize: none;
 	grid-auto-rows: max-content;
+	white-space: normal;
+	word-wrap: break-word;
 }
 
 table {
