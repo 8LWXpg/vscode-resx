@@ -45,6 +45,9 @@ function deleteEvent(self) {
 	// @ts-ignore
 	const index = Number.parseInt(self.getAttribute('data-index'));
 	obj.splice(index, 1);
+	Array.from(container.getElementsByTagName('tr')).forEach((e, i) => {
+		e.setAttribute('data-index', i.toString());
+	});
 	self.remove();
 	setStateAndPostUpdate(obj);
 }
