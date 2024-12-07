@@ -2,7 +2,7 @@
 
 A visual editor for .resx files  
 
-![screenshot](https://raw.githubusercontent.com/8LWXpg/vscode-resx/refs/heads/master/assets/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/8LWXpg/vscode-resx/refs/heads/master/assets/preview.avif)
 
 ## Features
 
