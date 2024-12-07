@@ -82,26 +82,8 @@ table {
 		padding: 6px;
 	}
 
-	td {
-		&.drop {
-			cursor: pointer;
-			text-align: center;
-			user-select: none;
-		}
-
-		&.handle {
-			cursor: grab;
-			text-align: center;
-			user-select: none;
-		}
-	}
-
 	tbody tr {
 		cursor: grab;
-
-		&.dragging {
-			opacity: 0.5;
-		}
 
 		&:not(:last-child) {
 			border-bottom: 1px solid;
@@ -111,4 +93,20 @@ table {
 	thead tr {
 		border-bottom: 2px solid;
 	}
+}
+
+.drop {
+	cursor: pointer;
+	text-align: center;
+	user-select: none;
+}
+
+.handle {
+	cursor: grab;
+	text-align: center;
+	user-select: none;
+}
+
+.dragging {
+	opacity: 0.5;
 }
