@@ -13,12 +13,12 @@ export function activate(context: vscode.ExtensionContext) {
 async function createEmptyFile(context: vscode.ExtensionContext) {
 	const fileUri = await vscode.window.showSaveDialog({
 		filters: {
-			ResX: ['resx'],
+			ResX: ['resx', 'resw'],
 		},
 		defaultUri: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined,
 	});
 	if (fileUri) {
-		await vscode.workspace.fs.copy(vscode.Uri.joinPath(context.extensionUri, 'out', 'empty.resx'), fileUri);
+		await vscode.workspace.fs.copy(vscode.Uri.joinPath(context.extensionUri, 'out', 'empty.txt'), fileUri);
 		vscode.commands.executeCommand('vscode.openWith', fileUri, ResXEditorProvider.viewType);
 	}
 }
@@ -55,7 +55,7 @@ async function syncWithMainResource(uri?: vscode.Uri) {
 	const currentFile = await ResXDocument.fromUri(editorUri);
 	const main = editorUri.toString().replace(/\.[a-z]{2}(-[A-Z]{2})?\.resx$/, '.resx');
 	if (main === editorUri.toString()) {
-		vscode.window.showInformationMessage("does not match pattern '.<locale>.resx'");
+		vscode.window.showInformationMessage("File name does not match pattern '.<locale>.resx'");
 		return;
 	}
 

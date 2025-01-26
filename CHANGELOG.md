@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.8.0]
+
+- Fixed `Create Empty File` when used in web.
+
 ## [0.7.0]
 
 - Added functionality to rearrange rows by dragging.

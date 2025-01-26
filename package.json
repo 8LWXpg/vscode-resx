@@ -86,7 +86,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "node ./esbuild.mjs --production && cp test-resx/empty.resx out",
+		"compile": "node ./esbuild.mjs --production && cp test-resx/empty.resx out/empty.txt",
 		"watch-web:esbuild": "node esbuild.mjs --watch",
 		"watch-web:tsc": "tsc --noEmit --watch --project tsconfig.json",
 		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
