@@ -3,6 +3,7 @@
 ## [0.8.0]
 
 - Fixed `Create Empty File` when used in web.
+- Removed select all text action on focus.
 
 ## [0.7.0]
 

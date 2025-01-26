@@ -118,9 +118,9 @@ function resize(row) {
 function rowHtml(name, value, comment) {
 	return /* html */ `
 <td class="handle">≡</td>
-<td><input class="input" id="name" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()" value="${name}"></td>
-<td><textarea rows="1" class="input" id="value" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${value}</textarea></td>
-<td><textarea rows="1" class="input" id="comment" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" onfocus="this.select()">${comment}</textarea></td>
+<td><input class="input" id="name" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" value="${name}"></td>
+<td><textarea rows="1" class="input" id="value" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)">${value}</textarea></td>
+<td><textarea rows="1" class="input" id="comment" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)">${comment}</textarea></td>
 <td class="drop" onclick="deleteEvent(this.parentElement)">✖</td>
 `;
 }
