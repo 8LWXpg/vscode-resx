@@ -191,11 +191,22 @@ function handleKeyEvent(e, input) {
 			next = tr?.previousElementSibling?.querySelector(`td #${input.id}`);
 			break;
 		}
-		case 'Enter':
 		case 'ArrowDown': {
 			e.preventDefault();
 			const tr = input.parentElement?.parentElement;
 			next = tr?.nextElementSibling?.querySelector(`td #${input.id}`);
+			break;
+		}
+		case 'Enter': {
+			if (e.shiftKey) {
+				e.preventDefault();
+				const tr = input.parentElement?.parentElement;
+				next = tr?.previousElementSibling?.querySelector(`td #${input.id}`);
+			} else {
+				e.preventDefault();
+				const tr = input.parentElement?.parentElement;
+				next = tr?.nextElementSibling?.querySelector(`td #${input.id}`);
+			}
 			break;
 		}
 		default:

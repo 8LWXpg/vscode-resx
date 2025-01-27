@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+- Added <kbd>Ctrl+Shift+Enter</kbd> key bindings
+
 ## [0.8.0]
 
 - Fixed `Create Empty File` when used in web.

@@ -8,7 +8,7 @@ A visual editor for .resx files
 
 - **Keyboard navigation:**
   
-  Move up: <kbd>Ctrl+Up</kbd>
+  Move up: <kbd>Ctrl+Up</kbd> or <kbd>Ctrl+Shift+Enter</kbd>
   
   Move down: <kbd>Ctrl+Down</kbd> or <kbd>Ctrl+Enter</kbd>
   
