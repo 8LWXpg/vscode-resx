@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { ResXDocument, ResXEditorProvider, activeEditor, XmlData } from './ResXEditorProvider';
-import { findCSharpNamespace } from './generator';
+import { generate } from './generator';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(ResXEditorProvider.register(context));
@@ -86,7 +86,7 @@ async function generateResourceDesigner(uri?: vscode.Uri) {
 		return;
 	}
 
-	vscode.window.showInformationMessage((await findCSharpNamespace(editorUri))!);
+	vscode.window.showInformationMessage((await generate(editorUri))!);
 }
 
 export function deactivate() {}
