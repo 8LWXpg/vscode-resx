@@ -72,6 +72,12 @@
 				"title": "Sync with Main Resource in the Same Folder",
 				"category": "ResX",
 				"icon": "$(sync)"
+			},
+			{
+				"command": "code-resx.generateResourceDesigner",
+				"enablement": "activeCustomEditorId == resx.editor",
+				"title": "Generate resource designer",
+				"category": "ResX"
 			}
 		],
 		"menus": {

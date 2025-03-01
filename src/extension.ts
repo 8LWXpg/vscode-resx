@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import { ResXDocument, ResXEditorProvider, activeEditor, XmlData } from './ResXEditorProvider';
+import { findCSharpNamespace } from './generator';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(ResXEditorProvider.register(context));
-	context.subscriptions.push(
-		vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)),
-	);
+	context.subscriptions.push(vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)));
 	context.subscriptions.push(vscode.commands.registerCommand('code-resx.updateOtherResources', updateOtherResources));
 	context.subscriptions.push(vscode.commands.registerCommand('code-resx.syncWithMainResource', syncWithMainResource));
+	context.subscriptions.push(vscode.commands.registerCommand('code-resx.generateResourceDesigner', generateResourceDesigner));
 }
 
 async function createEmptyFile(context: vscode.ExtensionContext) {
@@ -15,7 +15,7 @@ async function createEmptyFile(context: vscode.ExtensionContext) {
 		filters: {
 			ResX: ['resx', 'resw'],
 		},
-		defaultUri: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined,
+		defaultUri: vscode.workspace.workspaceFolders?.at(0)?.uri,
 	});
 	if (fileUri) {
 		await vscode.workspace.fs.copy(vscode.Uri.joinPath(context.extensionUri, 'out', 'empty.txt'), fileUri);
@@ -77,6 +77,16 @@ function syncFiles(main: ResXDocument, other: ResXDocument[]) {
 			),
 		);
 	});
+}
+
+async function generateResourceDesigner(uri?: vscode.Uri) {
+	const editorUri = uri || activeEditor;
+	if (!editorUri) {
+		vscode.window.showWarningMessage('No active editor');
+		return;
+	}
+
+	vscode.window.showInformationMessage((await findCSharpNamespace(editorUri))!);
 }
 
 export function deactivate() {}
