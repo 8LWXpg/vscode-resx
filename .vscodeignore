@@ -10,7 +10,7 @@ src/**
 .github
 *.vsix
 test-resx
-esbuild.js
+esbuild.mjs
 out/ResXEditorProvider.js
 assets/*
 !assets/icon.png
