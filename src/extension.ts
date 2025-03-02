@@ -53,9 +53,9 @@ async function syncWithMainResource(uri?: vscode.Uri) {
 	}
 
 	const currentFile = await ResXDocument.fromUri(editorUri);
-	const main = editorUri.toString().replace(/\.[a-z]{2}(-[A-Z]{2})?\.resx$/, '.resx');
+	const main = editorUri.toString().replace(/\.[a-z]{2}(?:-[A-Z]{2})?\.res([wx])$/, '.res$1');
 	if (main === editorUri.toString()) {
-		vscode.window.showInformationMessage("File name does not match pattern '.<locale>.resx'");
+		vscode.window.showInformationMessage("File name does not match pattern '.<locale>.res[wx]'");
 		return;
 	}
 

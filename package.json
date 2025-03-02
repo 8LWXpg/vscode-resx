@@ -77,7 +77,8 @@
 				"command": "code-resx.generateResourceDesigner",
 				"enablement": "activeCustomEditorId == resx.editor",
 				"title": "Generate resource designer",
-				"category": "ResX"
+				"category": "ResX",
+				"icon": "$(wrench)"
 			}
 		],
 		"menus": {
@@ -86,6 +87,23 @@
 					"command": "code-resx.syncWithMainResource",
 					"group": "navigation",
 					"when": "activeCustomEditorId == resx.editor"
+				},
+				{
+					"command": "code-resx.generateResourceDesigner",
+					"group": "navigation",
+					"when": "activeCustomEditorId == resx.editor"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "code-resx.syncWithMainResource",
+					"group": "1_modification",
+					"when": "resourceExtname == .resx || resourceExtname == .resw"
+				},
+				{
+					"command": "code-resx.generateResourceDesigner",
+					"group": "1_modification",
+					"when": "resourceExtname == .resx || resourceExtname == .resw"
 				}
 			]
 		}
