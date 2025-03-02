@@ -31,13 +31,14 @@ async function updateOtherResources(uri?: vscode.Uri) {
 		return;
 	}
 
+	const baseName = editorUri.path.slice(editorUri.path.lastIndexOf('/') + 1, editorUri.path.lastIndexOf('.'));
+	const nameRegex = new RegExp(`${baseName}\.[a-z]{2}(-[A-Z]{2})?\.res[wx]$`);
 	const parent = vscode.Uri.joinPath(editorUri, '..');
 	const mainFile = await ResXDocument.fromUri(editorUri);
 	const otherFiles = await Promise.all(
 		(await vscode.workspace.fs.readDirectory(parent))
-			.filter(([name, type]) => type === vscode.FileType.File && name.endsWith('.resx'))
+			.filter(([name, _]) => nameRegex.test(name))
 			.map(([name, _]) => vscode.Uri.joinPath(parent, name))
-			.filter((file) => file.toString() !== editorUri.toString())
 			.map((e) => ResXDocument.fromUri(e)),
 	);
 
@@ -54,10 +55,11 @@ async function syncWithMainResource(uri?: vscode.Uri) {
 
 	const currentFile = await ResXDocument.fromUri(editorUri);
 	const main = editorUri.toString().replace(/\.[a-z]{2}(?:-[A-Z]{2})?\.res([wx])$/, '.res$1');
-	if (main === editorUri.toString()) {
-		vscode.window.showInformationMessage("File name does not match pattern '.<locale>.res[wx]'");
-		return;
-	}
+	// Should be blocked from command
+	// if (main === editorUri.toString()) {
+	// 	vscode.window.showInformationMessage("File name does not match pattern '.<locale>.res[wx]'");
+	// 	return;
+	// }
 
 	const mainFile = await ResXDocument.fromUri(main);
 	syncFiles(mainFile, [currentFile]);
@@ -86,7 +88,11 @@ async function generateResourceDesigner(uri?: vscode.Uri) {
 		return;
 	}
 
-	vscode.window.showInformationMessage((await generate(editorUri))!);
+	try {
+		await generate(editorUri);
+	} catch (error) {
+		vscode.window.showErrorMessage(`${error}`);
+	}
 }
 
 export function deactivate() {}

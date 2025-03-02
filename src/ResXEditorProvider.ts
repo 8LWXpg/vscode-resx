@@ -21,10 +21,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	constructor(private readonly context: vscode.ExtensionContext) {}
 
 	// Called when custom editor is opened.
-	public async resolveCustomTextEditor(
-		document: vscode.TextDocument,
-		webviewPanel: vscode.WebviewPanel,
-	): Promise<void> {
+	public async resolveCustomTextEditor(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel): Promise<void> {
 		// Setup initial content for the webview
 		webviewPanel.webview.options = {
 			localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'view')],
@@ -44,7 +41,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 		// get position of last </resheader> tag
 		const tagPos = text.lastIndexOf('</resheader>');
 		// get indent
-		indent = text.substring(text.lastIndexOf('\n', tagPos) + 1, tagPos);
+		indent = text.slice(text.lastIndexOf('\n', tagPos) + 1, tagPos);
 		start = tagPos + '</resheader>'.length;
 		// get line ending
 		lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
@@ -58,7 +55,7 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			const text = doc.getText();
 			webviewPanel.webview.postMessage({
 				type: 'update',
-				obj: parser.parse(text.substring(start, text.lastIndexOf('</root>') - lineEnding.length)),
+				obj: parser.parse(text.slice(start, text.lastIndexOf('</root>') - lineEnding.length)),
 			});
 		}
 
@@ -170,7 +167,7 @@ export class ResXDocument {
 		// get position of last </resheader> tag
 		const tagPos = text.lastIndexOf('</resheader>');
 		// get indent
-		const indent = text.substring(text.lastIndexOf('\n', tagPos) + 1, tagPos);
+		const indent = text.slice(text.lastIndexOf('\n', tagPos) + 1, tagPos);
 		let start = tagPos + '</resheader>'.length;
 		// get line ending
 		const lineEnding = document.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
@@ -184,9 +181,7 @@ export class ResXDocument {
 	}
 
 	public parse(): XmlData[] {
-		return this.parser.parse(
-			this.text.substring(this.start, this.text.lastIndexOf('</root>') - this.lineEnding.length),
-		);
+		return this.parser.parse(this.text.slice(this.start, this.text.lastIndexOf('</root>') - this.lineEnding.length));
 	}
 
 	// update resx with new content
@@ -256,7 +251,7 @@ class ResXBuilder extends XMLBuilder {
 			// replace '\n' it with the document line ending
 			// resx supports " and ' without escaping
 			return formatted
-				.substring('<a>\n'.length, formatted.length - '</a>\n'.length)
+				.slice('<a>\n'.length, -'</a>\n'.length)
 				.replaceAll('&quot;', '"')
 				.replaceAll('&apos;', "'")
 				.replaceAll('\n', this.lineEnding);

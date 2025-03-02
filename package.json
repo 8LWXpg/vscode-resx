@@ -62,20 +62,20 @@
 			},
 			{
 				"command": "code-resx.updateOtherResources",
-				"enablement": "activeCustomEditorId == resx.editor",
+				"enablement": "resourceExtname == .resx || resourceExtname == .resw",
 				"title": "Update Other Resources in the Same Folder",
 				"category": "ResX"
 			},
 			{
 				"command": "code-resx.syncWithMainResource",
-				"enablement": "activeCustomEditorId == resx.editor",
+				"enablement": "resourceFilename =~ /\\.[a-z]{2}(?:-[A-Z]{2})?\\.res[wx]/",
 				"title": "Sync with Main Resource in the Same Folder",
 				"category": "ResX",
 				"icon": "$(sync)"
 			},
 			{
 				"command": "code-resx.generateResourceDesigner",
-				"enablement": "activeCustomEditorId == resx.editor",
+				"enablement": "resourceExtname == .resx || resourceExtname == .resw",
 				"title": "Generate resource designer",
 				"category": "ResX",
 				"icon": "$(wrench)"
@@ -86,7 +86,7 @@
 				{
 					"command": "code-resx.syncWithMainResource",
 					"group": "navigation",
-					"when": "activeCustomEditorId == resx.editor"
+					"when": "activeCustomEditorId == resx.editor && resourceFilename =~ /\\.[a-z]{2}(?:-[A-Z]{2})?\\.res[wx]/"
 				},
 				{
 					"command": "code-resx.generateResourceDesigner",
@@ -98,7 +98,7 @@
 				{
 					"command": "code-resx.syncWithMainResource",
 					"group": "1_modification",
-					"when": "resourceExtname == .resx || resourceExtname == .resw"
+					"when": "resourceFilename =~ /\\.[a-z]{2}(?:-[A-Z]{2})?\\.res[wx]/"
 				},
 				{
 					"command": "code-resx.generateResourceDesigner",

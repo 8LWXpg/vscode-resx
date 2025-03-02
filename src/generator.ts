@@ -19,7 +19,7 @@ async function findCSharpNamespace(filePath: vscode.Uri): Promise<string> {
 
 	const projectDir = vscode.Uri.joinPath(csprojFile, '..');
 	const fileDir = vscode.Uri.joinPath(filePath, '..');
-	let relativeDir = fileDir.path.substring(projectDir.path.length + 1);
+	let relativeDir = fileDir.path.slice(projectDir.path.length + 1);
 	let namespaceComponents: string[] = [];
 	if (relativeDir !== '') {
 		namespaceComponents = relativeDir.split('/');
@@ -80,10 +80,7 @@ async function extractRootNamespace(csprojPath: vscode.Uri): Promise<string> {
 		}
 
 		// Option 3: Use project file name
-		return csprojPath.path.substring(
-			vscode.Uri.joinPath(csprojPath, '..').path.length + 1,
-			csprojPath.path.length - '.csproj'.length,
-		);
+		return csprojPath.path.slice(vscode.Uri.joinPath(csprojPath, '..').path.length + 1, -'.csproj'.length);
 	} catch (error) {
 		throw new Error(`Failed to parse .csproj file: ${error}`);
 	}

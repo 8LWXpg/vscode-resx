@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased
+## [1.0.0]
 
-- Added <kbd>Ctrl+Shift+Enter</kbd> key bindings
+- Added <kbd>Ctrl+Shift+Enter</kbd> key bindings.
+- Added command `Generate resource designer`.
 
 ## [0.8.0]
 
