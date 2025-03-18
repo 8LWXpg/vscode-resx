@@ -11,6 +11,7 @@ A visual editor for .resx files
   Move down: <kbd>Ctrl+Down</kbd> or <kbd>Ctrl+Enter</kbd> \
   Move left: <kbd>Shift+Tab</kbd> \
   Move right: <kbd>Tab</kbd>
+- **Match format with Visual Studio:** same format as Visual Studio generated file.
 - **Sortable table:** click on the column header to sort the rows.
 - **Sync with document:** change in document will be reflected in the editor immediately, and vice versa.
 - **Small package size:** less than 25KiB.
