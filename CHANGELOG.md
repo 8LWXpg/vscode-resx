@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.1]
+
+- Fixed class name in generated file.
+
 ## [1.0.0]
 
 - Added <kbd>Ctrl+Shift+Enter</kbd> key bindings.
