@@ -95,8 +95,10 @@ async function extractRootNamespace(csprojPath: vscode.Uri): Promise<string> {
  * @param output Output resource designer file path
  */
 async function generate(input: vscode.Uri): Promise<void> {
+	const fileBaseName = (input.path.split('/').pop() || '').split('.')[0];
 	const output = input.with({ path: input.path.replace(/res[xw]$/, 'Designer.cs') });
 	const resxData = (await ResXDocument.fromUri(input)).parse();
+	const namespace = await findCSharpNamespace(input);
 	vscode.workspace.fs.writeFile(
 		output,
 		new TextEncoder().encode(`\uFEFF//------------------------------------------------------------------------------
@@ -109,7 +111,7 @@ async function generate(input: vscode.Uri): Promise<void> {
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ${await findCSharpNamespace(input)} {
+namespace ${namespace} {
     using System;
     
     
@@ -123,14 +125,14 @@ namespace ${await findCSharpNamespace(input)} {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class ${fileBaseName} {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal ${fileBaseName}() {
         }
         
         /// <summary>
@@ -140,7 +142,7 @@ namespace ${await findCSharpNamespace(input)} {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Community.PowerToys.Run.Plugin.SSH.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("${namespace}.${fileBaseName}", typeof(${fileBaseName}).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
