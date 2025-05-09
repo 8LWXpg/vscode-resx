@@ -6,8 +6,8 @@ const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
 
 /**
- * This plugin hooks into the build process to print errors in a format that the problem matcher in Visual Studio Code
- * can understand.
+ * This plugin hooks into the build process to print errors in a format that the problem matcher in Visual Studio Code can
+ * understand.
  *
  * @type {import('esbuild').Plugin}
  */
@@ -37,6 +37,7 @@ const extensionConfig = {
 	platform: 'node',
 	format: 'cjs',
 	entryPoints: ['./src/extension.ts'],
+	drop: production ? ['console'] : undefined,
 	outdir: './out',
 	external: ['vscode'],
 	plugins: [esbuildProblemMatcherPlugin],
@@ -46,6 +47,7 @@ const extensionConfig = {
 const webviewConfig = {
 	minify: production,
 	entryPoints: ['./editor/webview.js'],
+	drop: production ? ['console'] : undefined,
 	outdir: './view',
 	plugins: [esbuildProblemMatcherPlugin],
 };
