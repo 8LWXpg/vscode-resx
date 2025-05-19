@@ -172,7 +172,7 @@ function formatOutput(name: string, value: string): string {
 	return `
         
         /// <summary>
-        ///   Looks up a localized string similar to ${value}.
+        ///   Looks up a localized string similar to ${value.replace('\n', '\n        ///')}.
         /// </summary>
         internal static string ${name} {
             get {
