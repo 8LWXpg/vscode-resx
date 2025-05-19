@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.2]
+
+- Fixed multiline value summary generation.
+
 ## [1.0.1]
 
 - Fixed class name in generated file.
