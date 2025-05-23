@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.3]
+
+- Fixed multiline value summary generation.
+
 ## [1.0.2]
 
 - Fixed multiline value summary generation.
