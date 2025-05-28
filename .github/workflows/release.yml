@@ -12,8 +12,8 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: taiki-e/create-gh-release-action@v1.9.1
+      - uses: actions/checkout@v4
+      - uses: taiki-e/create-gh-release-action@v1
         with:
           title: $tag
           changelog: CHANGELOG.md
