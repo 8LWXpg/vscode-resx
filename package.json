@@ -2,7 +2,7 @@
 	"name": "code-resx",
 	"displayName": "ResX Viewer/Editor",
 	"description": "Edit ResX and ResW files in Webview",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"engines": {
 		"vscode": "^1.86.0"
 	},
