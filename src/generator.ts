@@ -169,12 +169,14 @@ namespace ${namespace} {
 }
 
 function formatOutput(name: string, value: string): string {
+	// Space is allowed but replaced with `-`, maybe there's other cases like this?
+	const key = name.replaceAll(' ', '_');
 	return `
         
         /// <summary>
         ///   Looks up a localized string similar to ${value.replaceAll('\n', '\n        ///')}.
         /// </summary>
-        internal static string ${name} {
+        internal static string ${key} {
             get {
                 return ResourceManager.GetString("${name}", resourceCulture);
             }

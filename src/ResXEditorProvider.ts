@@ -206,6 +206,7 @@ class ResXParser extends XMLParser {
 		super({
 			ignoreAttributes: false,
 			attributeNamePrefix: '@_',
+			trimValues: false,
 			isArray: (tagName) => tagName === 'data',
 		});
 	}
