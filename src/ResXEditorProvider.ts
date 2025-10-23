@@ -216,6 +216,7 @@ class ResXParser extends XMLParser {
 			const data: XmlData[] = super.parse(resxData).data;
 			data.forEach((obj) => {
 				delete obj['@_xml:space'];
+				delete obj['#text'];
 			});
 
 			return data;
