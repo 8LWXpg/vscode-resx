@@ -4,9 +4,9 @@ import { ResXDocument } from './ResXEditorProvider';
 
 //#region namespace
 /**
- * Finds the C# namespace for a given file path by:
+ * Finds the C# namespace for a given filepath by:
  *
- * 1. Finding the associated .csproj file
+ * 1. Finding the associated `.csproj` file
  * 2. Extracting the root namespace from the project
  * 3. Adding subdirectory structure as namespace components
  *
@@ -33,7 +33,7 @@ async function findCSharpNamespace(filePath: vscode.Uri): Promise<string> {
 	}
 }
 
-/** Finds the .csproj file associated with a C# file by searching up the directory tree */
+/** Finds the `.csproj` file associated with a C# file by searching up the directory tree */
 async function findAssociatedCsprojFile(filePath: vscode.Uri): Promise<vscode.Uri> {
 	const rootDir = vscode.workspace.getWorkspaceFolder(filePath)!.uri;
 	for (
@@ -49,10 +49,10 @@ async function findAssociatedCsprojFile(filePath: vscode.Uri): Promise<vscode.Ur
 		}
 	}
 
-	throw new Error('Failed to find .csproj file at parent directory');
+	throw new Error('Failed to find `.csproj` file at parent directory');
 }
 
-/** Extracts the root namespace from a .csproj file */
+/** Extracts the root namespace from a `.csproj` file */
 async function extractRootNamespace(csprojPath: vscode.Uri): Promise<string> {
 	try {
 		const fileContent = new TextDecoder().decode(await vscode.workspace.fs.readFile(csprojPath));
