@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.4]
+
+- Preserve space in value.
+
 ## [1.0.3]
 
 - Fixed multiline value summary generation.
