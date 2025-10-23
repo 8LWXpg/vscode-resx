@@ -237,6 +237,7 @@ class ResXBuilder extends XMLBuilder {
 			attributeNamePrefix: '@_',
 			format: true,
 			indentBy: indent,
+			suppressEmptyNode: true,
 		});
 		this.lineEnding = lineEnding;
 	}

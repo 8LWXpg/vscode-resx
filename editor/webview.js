@@ -29,7 +29,7 @@ function textareaEvent(self) {
 	/** @type {State} */
 	let { obj } = vscode.getState();
 	const index = self.getAttribute('data-index');
-	const value = self.querySelector('#value').value || undefined;
+	const value = self.querySelector('#value').value || '';
 	const comment = self.querySelector('#comment').value || undefined;
 	obj[index].value = value;
 	obj[index].comment = comment;
