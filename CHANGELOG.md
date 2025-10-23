@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.5]
+
+- Remove text node and fix output formatting.
+
 ## [1.0.4]
 
 - Preserve space in value.
