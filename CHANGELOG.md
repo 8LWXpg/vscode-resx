@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.6]
+
+- Self close empty tag.
+
 ## [1.0.5]
 
 - Remove text node and fix output formatting.
