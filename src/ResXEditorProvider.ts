@@ -1,5 +1,5 @@
+import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import * as vscode from 'vscode';
-import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
 export let activeEditor: vscode.Uri | null = null;
 
@@ -201,13 +201,18 @@ export class ResXDocument {
 	}
 }
 
-class ResXParser extends XMLParser {
+export class ResXParser extends XMLParser {
 	constructor() {
 		super({
 			ignoreAttributes: false,
 			attributeNamePrefix: '@_',
 			trimValues: false,
 			isArray: (tagName) => tagName === 'data',
+			numberParseOptions: {
+				leadingZeros: false,
+				hex: false,
+				skipLike: /.*/,
+			},
 		});
 	}
 

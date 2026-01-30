@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.7]
+
+- Skip default number parsing.
+
 ## [1.0.6]
 
 - Self close empty tag.
