@@ -1,5 +1,5 @@
-import * as vscode from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
+import * as vscode from 'vscode';
 import { ResXDocument } from './ResXEditorProvider';
 
 //#region namespace

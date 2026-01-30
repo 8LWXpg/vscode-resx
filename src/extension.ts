@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { ResXDocument, ResXEditorProvider, activeEditor, XmlData } from './ResXEditorProvider';
 import { generate } from './generator';
+import { activeEditor, ResXDocument, ResXEditorProvider, XmlData } from './ResXEditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(ResXEditorProvider.register(context));
