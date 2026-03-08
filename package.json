@@ -30,6 +30,20 @@
 	"main": "./out/extension.js",
 	"browser": "./out/extension.js",
 	"contributes": {
+		"configuration": {
+			"title": "ResX Viewer/Editor",
+			"properties": {
+				"code-resx.generator.accessModifier": {
+					"type": "string",
+					"enum": [
+						"internal",
+						"public"
+					],
+					"default": "internal",
+					"description": "The access modifier of the generated resource designer class."
+				}
+			}
+		},
 		"customEditors": [
 			{
 				"viewType": "resx.editor",

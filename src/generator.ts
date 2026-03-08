@@ -88,13 +88,16 @@ async function extractRootNamespace(csprojPath: vscode.Uri): Promise<string> {
 //#endregion
 
 //#region generate
+export type AccessModifier = 'public' | 'internal';
+
 /**
  * Generate resource designer file
  *
  * @param input Resx/resw file path
  * @param output Output resource designer file path
+ * @param accessModifier Access modifier for the generated class (public or internal)
  */
-async function generate(input: vscode.Uri): Promise<void> {
+async function generate(input: vscode.Uri, accessModifier: AccessModifier): Promise<void> {
 	const fileBaseName = (input.path.split('/').pop() || '').split('.')[0];
 	const output = input.with({ path: input.path.replace(/res[xw]$/, 'Designer.cs') });
 	const resxData = (await ResXDocument.fromUri(input)).parse();
@@ -125,7 +128,7 @@ namespace ${namespace} {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ${fileBaseName} {
+    ${accessModifier} class ${fileBaseName} {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -139,7 +142,7 @@ namespace ${namespace} {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        ${accessModifier} static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("${namespace}.${fileBaseName}", typeof(${fileBaseName}).Assembly);
@@ -154,21 +157,21 @@ namespace ${namespace} {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        ${accessModifier} static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
             set {
                 resourceCulture = value;
             }
-        }${resxData.map((e) => formatOutput(e['@_name'], e.value)).join('')}
+        }${resxData.map((e) => formatOutput(e['@_name'], e.value, accessModifier)).join('')}
     }
 }
 `),
 	);
 }
 
-function formatOutput(name: string, value: string): string {
+function formatOutput(name: string, value: string, accessModifier: AccessModifier): string {
 	// Space is allowed but replaced with `-`, maybe there's other cases like this?
 	const key = name.replaceAll(' ', '_');
 	return `
@@ -176,7 +179,7 @@ function formatOutput(name: string, value: string): string {
         /// <summary>
         ///   Looks up a localized string similar to ${value.replaceAll('\n', '\n        ///')}.
         /// </summary>
-        internal static string ${key} {
+        ${accessModifier} static string ${key} {
             get {
                 return ResourceManager.GetString("${name}", resourceCulture);
             }

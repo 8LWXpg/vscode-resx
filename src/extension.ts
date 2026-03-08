@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { generate } from './generator';
+import { AccessModifier, generate } from './generator';
 import { activeEditor, ResXDocument, ResXEditorProvider, XmlData } from './ResXEditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -7,7 +7,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)));
 	context.subscriptions.push(vscode.commands.registerCommand('code-resx.updateOtherResources', updateOtherResources));
 	context.subscriptions.push(vscode.commands.registerCommand('code-resx.syncWithMainResource', syncWithMainResource));
-	context.subscriptions.push(vscode.commands.registerCommand('code-resx.generateResourceDesigner', generateResourceDesigner));
+	context.subscriptions.push(
+		vscode.commands.registerCommand('code-resx.generateResourceDesigner', (uri: vscode.Uri) => {
+			const accessModifier =
+				vscode.workspace.getConfiguration('code-resx.generator').get<AccessModifier>('accessModifier') || 'internal';
+			generateResourceDesigner(accessModifier, uri);
+		}),
+	);
 }
 
 async function createEmptyFile(context: vscode.ExtensionContext) {
@@ -81,7 +87,7 @@ function syncFiles(main: ResXDocument, other: ResXDocument[]) {
 	});
 }
 
-async function generateResourceDesigner(uri?: vscode.Uri) {
+async function generateResourceDesigner(accessModifier: AccessModifier, uri?: vscode.Uri) {
 	const editorUri = uri || activeEditor;
 	if (!editorUri) {
 		vscode.window.showWarningMessage('No active editor');
@@ -89,7 +95,7 @@ async function generateResourceDesigner(uri?: vscode.Uri) {
 	}
 
 	try {
-		await generate(editorUri);
+		await generate(editorUri, accessModifier);
 	} catch (error) {
 		vscode.window.showErrorMessage(`${error}`);
 	}
