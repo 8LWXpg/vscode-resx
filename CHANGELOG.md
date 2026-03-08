@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.0]
+
+- Added settings for generated file access modifier.
+
 ## [1.0.7]
 
 - Skip default number parsing.
