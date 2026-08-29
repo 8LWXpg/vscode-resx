@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
-import { ResXBuilder, ResXParser } from './resx.ts';
+import { ResXBuilder, ResXParser } from '../resx.js';
 
 /** Mirrors the header slicing done in ResXEditorProvider.ts, without needing a vscode.TextDocument. */
 function splitResx(text: string, lineEnding: string) {

@@ -128,7 +128,7 @@
 		"watch-web:esbuild": "node esbuild.mjs --watch",
 		"watch-web:tsc": "tsc --noEmit --watch --project tsconfig.json",
 		"watch:tsc": "tsc -w",
-		"test:unit": "node --test src/resx.test.ts",
+		"test:unit": "node --test src/test/resx.test.ts",
 		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
 		"check-update": "ncu"
 	},
