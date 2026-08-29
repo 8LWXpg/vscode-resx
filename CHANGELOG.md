@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.2.0]
+
+- Fixed scroll position and focus being lost on undo/redo and other external document changes.
+- Fixed noticeable lag on undo/redo with large resx files.
+- Fixed being unable to select text with the mouse while dragging is enabled; dragging is now only from the handle.
+
 ## [1.1.0]
 
 - Added settings for generated file access modifier.
