@@ -21,3 +21,4 @@ editor/**
 out/*.js
 !out/extension.js
 out/test/**
+eslint.config.mjs
