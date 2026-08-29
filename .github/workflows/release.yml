@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build:
@@ -17,4 +17,3 @@ jobs:
         with:
           title: $tag
           changelog: CHANGELOG.md
-          token: ${{ secrets.GITHUB_TOKEN }}

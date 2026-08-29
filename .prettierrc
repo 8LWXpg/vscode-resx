@@ -3,7 +3,7 @@
 		"@ianvs/prettier-plugin-sort-imports",
 		"./node_modules/prettier-plugin-jsdoc/dist/index.js"
 	],
-	"printWidth": 130,
+	"printWidth": 100,
 	"singleQuote": true,
 	"useTabs": true,
 	"endOfLine": "lf"

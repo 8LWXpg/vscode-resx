@@ -45,6 +45,7 @@ const extensionConfig = {
 
 /** @type {import('esbuild').BuildOptions} */
 const webviewConfig = {
+	bundle: true,
 	minify: production,
 	entryPoints: ['./editor/webview.js'],
 	drop: production ? ['console'] : undefined,

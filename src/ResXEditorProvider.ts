@@ -12,7 +12,10 @@ export type XmlData = {
 export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		const provider = new ResXEditorProvider(context);
-		const providerRegistration = vscode.window.registerCustomEditorProvider(ResXEditorProvider.viewType, provider);
+		const providerRegistration = vscode.window.registerCustomEditorProvider(
+			ResXEditorProvider.viewType,
+			provider,
+		);
 		return providerRegistration;
 	}
 
@@ -21,7 +24,10 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	constructor(private readonly context: vscode.ExtensionContext) {}
 
 	// Called when custom editor is opened.
-	public async resolveCustomTextEditor(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel): Promise<void> {
+	public async resolveCustomTextEditor(
+		document: vscode.TextDocument,
+		webviewPanel: vscode.WebviewPanel,
+	): Promise<void> {
 		// Setup initial content for the webview
 		webviewPanel.webview.options = {
 			localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'view')],
@@ -64,14 +70,21 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 			const output: string = builder.build(data);
 			const end = document.getText().lastIndexOf('</root>');
 
-			edit.replace(document.uri, new vscode.Range(document.positionAt(start), document.positionAt(end)), output);
+			edit.replace(
+				document.uri,
+				new vscode.Range(document.positionAt(start), document.positionAt(end)),
+				output,
+			);
 
 			return vscode.workspace.applyEdit(edit);
 		}
 
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
 			// Undo and Redo fires another onDidChangeTextDocument event, so we need to check if the version is different
-			if (e.document.uri.toString() === document.uri.toString() && e.document.version !== documentVersion) {
+			if (
+				e.document.uri.toString() === document.uri.toString() &&
+				e.document.version !== documentVersion
+			) {
 				if (updateFromWebview) {
 					updateFromWebview = false;
 				} else {
@@ -108,8 +121,12 @@ export class ResXEditorProvider implements vscode.CustomTextEditorProvider {
 	}
 
 	private getHtmlForWebview(webview: vscode.Webview): string {
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.js'));
-		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.css'));
+		const scriptUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.js'),
+		);
+		const styleUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.context.extensionUri, 'view', 'webview.css'),
+		);
 		const sortableStyleUri = webview.asWebviewUri(
 			vscode.Uri.joinPath(this.context.extensionUri, 'view', 'sortable-base.min.css'),
 		);
@@ -181,7 +198,9 @@ export class ResXDocument {
 	}
 
 	public parse(): XmlData[] {
-		return this.parser.parse(this.text.slice(this.start, this.text.lastIndexOf('</root>') - this.lineEnding.length));
+		return this.parser.parse(
+			this.text.slice(this.start, this.text.lastIndexOf('</root>') - this.lineEnding.length),
+		);
 	}
 
 	// update resx with new content
