@@ -4,7 +4,8 @@
 		"target": "ESNext",
 		"outDir": "out",
 		"lib": [
-			"ESNext"
+			"ESNext",
+			"DOM"
 		],
 		"sourceMap": true,
 		"noImplicitAny": false,
@@ -20,6 +21,7 @@
 		"node_modules",
 		".vscode-test",
 		"out",
-		"view"
+		"view",
+		"src/resx.test.ts"
 	]
 }

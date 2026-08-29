@@ -85,8 +85,6 @@ table {
 	}
 
 	tbody tr {
-		cursor: grab;
-
 		&:not(:last-child) {
 			border-bottom: 1px solid;
 		}

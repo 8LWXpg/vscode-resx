@@ -12,11 +12,9 @@ import udomdiff from 'udomdiff';
 const vscode = acquireVsCodeApi();
 
 const container = /** @type {HTMLTableSectionElement} */ (document.querySelector('tbody'));
-/** @type {HTMLTableRowElement | null} */
-let dragging;
 //#endregion
 
-//#region Extension <-> webview messaging
+//#region Backend messaging
 /** @param {XMLData[]} obj */
 function setStateAndPostUpdate(obj) {
 	vscode.setState({ obj: obj });
@@ -39,21 +37,19 @@ function resize(row) {
 }
 
 /**
- * Create a <tr>, keyed by `name`.
- *
  * @param {number} index
  * @param {string} name
  * @param {string} value
  * @param {string} comment
- * @returns {HTMLTableRowElement}
+ * @returns {HTMLTableRowElement} Keyed by `name`
  */
 function buildRow(index, name, value, comment) {
 	function rowHtml() {
-		const n = (name || '').replaceAll('"', '&quot;');
-		const v = (value || '').replaceAll('"', '&quot;');
-		const c = (comment || '').replaceAll('"', '&quot;');
+		const n = name.replaceAll('"', '&quot;');
+		const v = value.replaceAll('"', '&quot;');
+		const c = comment.replaceAll('"', '&quot;');
 		return /* html */ `
-<td class="handle">≡</td>
+<td class="handle" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd()">≡</td>
 <td><input class="input" id="name" oninput="inputEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)" value="${n}"></td>
 <td><textarea rows="1" class="input" id="value" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)">${v}</textarea></td>
 <td><textarea rows="1" class="input" id="comment" oninput="textareaEvent(this.parentElement.parentElement)" onkeydown="handleKeyEvent(event, this)">${c}</textarea></td>
@@ -62,33 +58,25 @@ function buildRow(index, name, value, comment) {
 	}
 
 	const row = document.createElement('tr');
-	row.draggable = true;
-	row.ondragstart = handleDragStart;
 	row.ondragover = handleDragOver;
-	row.ondragend = handleDragEnd;
 	row.innerHTML = rowHtml();
 	row.setAttribute('data-index', index.toString());
 	row.setAttribute('data-name', name);
-	// Not resized here: scrollHeight is 0 on a detached node, resize() must run after attach
+	// scrollHeight is 0 while detached; caller must resize() after attaching
 	return row;
 }
 
 //#endregion
 
-//#region Reconciling an incoming document update into the table
-/**
- * Reuses existing rows keyed by name instead of rebuilding the table to keep their scroll position
- * and focus.
- *
- * @param {XMLData[]} obj
- */
+//#region Table content update
+// Reuses existing rows instead of rebuilding, so untouched rows keep scroll position and focus.
+/** @param {XMLData[]} obj */
 function updateContent(obj) {
-	const oldRows = Array.from(container.children);
+	const oldRows = /** @type {HTMLTableRowElement[]} */ (Array.from(container.children));
 	const oldKeys = oldRows.map((row) => row.getAttribute('data-name'));
 	const newKeys = obj.map((ele) => ele['@_name']);
 
-	// Only one field can be focused/edited at a time, so a same-length, single-index name change
-	// must be a rename.
+	// Only one field can be focused at a time, so a same-length, single-index name change is a rename.
 	/** @returns {number} The renamed index, or -1 if this isn't a simple rename */
 	function detectRename() {
 		if (oldKeys.length !== newKeys.length) {
@@ -116,16 +104,22 @@ function updateContent(obj) {
 		const name = /** @type {HTMLInputElement} */ (row.querySelector('#name'));
 		const value = /** @type {HTMLTextAreaElement} */ (row.querySelector('#value'));
 		const comment = /** @type {HTMLTextAreaElement} */ (row.querySelector('#comment'));
+		let modified = false;
 		if (name.value !== data['@_name']) {
 			name.value = data['@_name'];
+			modified = true;
 		}
-		if (value.value !== (data.value || '')) {
-			value.value = data.value || '';
+		if (value.value !== data.value) {
+			value.value = data.value;
+			modified = true;
 		}
 		if (comment.value !== (data.comment || '')) {
 			comment.value = data.comment || '';
+			modified = true;
 		}
-		resize(row);
+		if (modified) {
+			resize(row);
+		}
 	}
 
 	const renameAt = detectRename();
@@ -143,21 +137,19 @@ function updateContent(obj) {
 			patchRow(row, ele, i);
 			return row;
 		}
-		const created = buildRow(i, ele['@_name'], ele.value || '', ele.comment || '');
+		const created = buildRow(i, ele['@_name'], ele.value, ele.comment || '');
 		createdRows.push(created);
 		return created;
 	});
 
 	udomdiff(container, oldRows, newRows, (row) => row);
-	// resize() needs layout info, so it can only run once these rows are actually attached
+	// resize() needs these attached first, which udomdiff just did
 	createdRows.forEach(resize);
 }
 //#endregion
 
 //#region Row field edits
-
-// inputEvent, textareaEvent, deleteEvent, and handleKeyEvent below have no callers in this file -
-// they're invoked from the inline oninput/onclick/onkeydown attributes in rowHtml()'s markup.
+// Used by inline oninput/onclick/onkeydown attributes in rowHtml()'s markup.
 
 function inputEvent(self) {
 	/** @type {State} */
@@ -194,7 +186,6 @@ function deleteEvent(self) {
 	setStateAndPostUpdate(obj);
 }
 
-// Called from the "+ Add" button's onclick in ResXEditorProvider.ts's HTML template.
 function addContent() {
 	/** @type {XMLData[]} */
 	const obj = vscode.getState().obj;
@@ -250,6 +241,11 @@ function handleKeyEvent(e, input) {
 //#endregion
 
 //#region Drag to reorder
+// handleDragStart and handleDragEnd are invoked from the handle's ondragstart/ondragend in rowHtml().
+
+/** @type {HTMLTableRowElement | null} */
+let dragging;
+
 /** @param {DragEvent} event */
 function handleDragStart(event) {
 	// @ts-ignore
@@ -259,7 +255,7 @@ function handleDragStart(event) {
 
 /** @param {DragEvent} event */
 function handleDragOver(event) {
-	event.preventDefault(); // Allow dropping
+	event.preventDefault();
 
 	// @ts-ignore
 	const draggingIndex = Number.parseInt(dragging.getAttribute('data-index'));
@@ -317,7 +313,7 @@ function sortObject(self, key) {
 	setStateAndPostUpdate(obj);
 }
 
-// Called from the <th> onclick handlers in ResXEditorProvider.ts's HTML template.
+// Called from the <th> onclick handlers.
 function sortName(self) {
 	sortObject(self, '@_name');
 }
@@ -344,20 +340,20 @@ window.addEventListener('message', (event) => {
 	}
 });
 
-// Webview is torn down when not visible and re-created when it becomes visible again; state
-// lets us restore content across that re-load.
+// Restores content across the tear-down/re-create cycle when the webview loses visibility.
 const state = vscode.getState();
 if (state) {
 	updateContent(state.obj);
 }
 
-// esbuild bundles this into an IIFE, so these are no longer implicit globals even though the
-// HTML (built in ResXEditorProvider.ts) and rowHtml() above call them via inline on* attributes.
+// Bundling wraps this file in an IIFE, so these need re-exposing for the inline on* attributes.
 Object.assign(window, {
 	inputEvent,
 	textareaEvent,
 	deleteEvent,
 	handleKeyEvent,
+	handleDragStart,
+	handleDragEnd,
 	addContent,
 	sortName,
 	sortValue,

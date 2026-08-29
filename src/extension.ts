@@ -1,16 +1,25 @@
 import * as vscode from 'vscode';
 import { AccessModifier, generate } from './generator';
-import { activeEditor, ResXDocument, ResXEditorProvider, XmlData } from './ResXEditorProvider';
+import { XmlData } from './resx';
+import { activeEditor, ResXDocument, ResXEditorProvider } from './ResXEditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(ResXEditorProvider.register(context));
-	context.subscriptions.push(vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)));
-	context.subscriptions.push(vscode.commands.registerCommand('code-resx.updateOtherResources', updateOtherResources));
-	context.subscriptions.push(vscode.commands.registerCommand('code-resx.syncWithMainResource', syncWithMainResource));
+	context.subscriptions.push(
+		vscode.commands.registerCommand('code-resx.createEmptyFile', () => createEmptyFile(context)),
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('code-resx.updateOtherResources', updateOtherResources),
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('code-resx.syncWithMainResource', syncWithMainResource),
+	);
 	context.subscriptions.push(
 		vscode.commands.registerCommand('code-resx.generateResourceDesigner', (uri: vscode.Uri) => {
 			const accessModifier =
-				vscode.workspace.getConfiguration('code-resx.generator').get<AccessModifier>('accessModifier') || 'internal';
+				vscode.workspace
+					.getConfiguration('code-resx.generator')
+					.get<AccessModifier>('accessModifier') || 'internal';
 			generateResourceDesigner(accessModifier, uri);
 		}),
 	);
@@ -24,7 +33,10 @@ async function createEmptyFile(context: vscode.ExtensionContext) {
 		defaultUri: vscode.workspace.workspaceFolders?.at(0)?.uri,
 	});
 	if (fileUri) {
-		await vscode.workspace.fs.copy(vscode.Uri.joinPath(context.extensionUri, 'out', 'empty.txt'), fileUri);
+		await vscode.workspace.fs.copy(
+			vscode.Uri.joinPath(context.extensionUri, 'out', 'empty.txt'),
+			fileUri,
+		);
 		vscode.commands.executeCommand('vscode.openWith', fileUri, ResXEditorProvider.viewType);
 	}
 }
@@ -37,7 +49,10 @@ async function updateOtherResources(uri?: vscode.Uri) {
 		return;
 	}
 
-	const baseName = editorUri.path.slice(editorUri.path.lastIndexOf('/') + 1, editorUri.path.lastIndexOf('.'));
+	const baseName = editorUri.path.slice(
+		editorUri.path.lastIndexOf('/') + 1,
+		editorUri.path.lastIndexOf('.'),
+	);
 	const nameRegex = new RegExp(`${baseName}\.[a-z]{2}(-[A-Z]{2})?\.res[wx]$`);
 	const parent = vscode.Uri.joinPath(editorUri, '..');
 	const mainFile = await ResXDocument.fromUri(editorUri);
