@@ -21,18 +21,15 @@
 		},
 		{
 			"name": "Extension Tests",
-			"type": "extensionHost",
+			"type": "node",
 			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--disable-extensions",
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+			"runtimeArgs": [
+				"--test",
+				"src/test/resx.test.ts"
 			],
-			"outFiles": [
-				"${workspaceFolder}/out/test/**/*.js"
-			],
-			"preLaunchTask": "npm: watch-web:tsc"
+			"skipFiles": [
+				"<node_internals>/**"
+			]
 		},
 		{
 			"name": "Run Web Extension",

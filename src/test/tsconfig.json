@@ -4,6 +4,9 @@
         "types": [
             "node"
         ],
+        "module": "nodenext",
+        "noEmit": true,
+        "allowImportingTsExtensions": true
     },
     "include": [
         "./**/*.ts"

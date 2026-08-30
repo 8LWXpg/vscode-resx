@@ -9,26 +9,15 @@ export type XmlData = {
 export class ResXParser extends XMLParser {
 	constructor() {
 		super({
-			ignoreAttributes: false,
+			ignoreAttributes: ['xml:space'],
 			attributeNamePrefix: '@_',
-			trimValues: false,
 			isArray: (tagName) => tagName === 'data',
-			numberParseOptions: {
-				leadingZeros: false,
-				hex: false,
-				skipLike: /.*/,
-			},
+			parseTagValue: false,
 		});
 	}
 
 	public parse(resxData: string): XmlData[] {
-		const data: XmlData[] = super.parse(resxData).data;
-		data.forEach((obj) => {
-			delete obj['@_xml:space'];
-			delete obj['#text'];
-		});
-
-		return data;
+		return super.parse(resxData).data;
 	}
 }
 
@@ -53,9 +42,9 @@ export class ResXBuilder extends XMLBuilder {
 		data.forEach((obj) => {
 			obj['@_xml:space'] = 'preserve';
 		});
+		// Wrap the data in a dummy root element for 1 level of indentation.
 		const formatted: string = super.build({ a: { data: data } });
-		// replace '\n' it with the document line ending
-		// resx supports " and ' without escaping
+		// resx supports `"` and `'` without escaping
 		return formatted
 			.slice('<a>\n'.length, -'</a>\n'.length)
 			.replaceAll('&quot;', '"')
