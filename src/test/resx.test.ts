@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
-import { ResXBuilder, ResXParser } from '../resx.js';
+import { ResXBuilder, ResXParser } from '../resx.ts';
 
 /** Mirrors the header slicing done in ResXEditorProvider.ts, without needing a vscode.TextDocument. */
 function splitResx(text: string, lineEnding: string) {
@@ -59,13 +59,13 @@ test('should not parse numeric values as numbers', () => {
 });
 
 test('should persist the format for a plain resx', () => {
-	const resx = path.resolve(import.meta.dirname, '../test-resx/Properties/Resources.resx');
+	const resx = path.resolve(import.meta.dirname, '../../test-resx/Properties/Resources.resx');
 	const { before, after } = roundTrip(resx);
 	assert.strictEqual(before, after);
 });
 
 test('should round-trip quotes, apostrophes, ampersands, and angle brackets', () => {
-	const resx = path.resolve(import.meta.dirname, '../test-resx/SpecialChars.resx');
+	const resx = path.resolve(import.meta.dirname, '../../test-resx/SpecialChars.resx');
 	const { data, before, after } = roundTrip(resx);
 
 	const quotes = data.find((d) => d['@_name'] === 'quotes_and_apostrophes');
