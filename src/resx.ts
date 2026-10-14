@@ -17,7 +17,7 @@ export class ResXParser extends XMLParser {
 	}
 
 	public parse(resxData: string): XmlData[] {
-		return super.parse(resxData).data;
+		return super.parse(resxData).data ?? [];
 	}
 }
 

@@ -2,12 +2,13 @@
 import * as esbuild from 'esbuild';
 import { sassPlugin } from 'esbuild-sass-plugin';
 
+const analyze = process.argv.includes('--analyze');
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
 
 /**
- * This plugin hooks into the build process to print errors in a format that the problem matcher in Visual Studio Code can
- * understand.
+ * This plugin hooks into the build process to print errors in a format that the problem matcher in
+ * Visual Studio Code can understand.
  *
  * @type {import('esbuild').Plugin}
  */
@@ -34,8 +35,9 @@ const extensionConfig = {
 	bundle: true,
 	minify: production,
 	sourcemap: !production,
-	platform: 'node',
+	platform: 'browser',
 	format: 'cjs',
+	metafile: analyze,
 	entryPoints: ['./src/extension.ts'],
 	drop: production ? ['console'] : undefined,
 	outdir: './out',
@@ -47,6 +49,7 @@ const extensionConfig = {
 const webviewConfig = {
 	bundle: true,
 	minify: production,
+	metafile: analyze,
 	entryPoints: ['./editor/webview.js'],
 	drop: production ? ['console'] : undefined,
 	outdir: './view',
@@ -71,7 +74,12 @@ async function main() {
 	if (watch) {
 		await Promise.all(ctx.map((c) => c.watch()));
 	} else {
-		await Promise.all(ctx.map((c) => c.rebuild()));
+		const results = await Promise.all(ctx.map((c) => c.rebuild()));
+		if (analyze) {
+			for (const r of results) {
+				if (r.metafile) console.log(await esbuild.analyzeMetafile(r.metafile));
+			}
+		}
 		await Promise.all(ctx.map((c) => c.dispose()));
 	}
 }

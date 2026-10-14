@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.1]
+
+- Fixed handling of empty resx files.
+
 ## [1.2.0]
 
 - Fixed scroll position and focus being lost on undo/redo and other external document changes.

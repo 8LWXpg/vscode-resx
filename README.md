@@ -14,7 +14,6 @@ A visual editor for .resx files
 - **Match format with Visual Studio:** same format as Visual Studio generated file.
 - **Sortable table:** click on the column header to sort the rows.
 - **Sync with document:** change in document will be reflected in the editor immediately, and vice versa.
-- **Small package size:** less than 25KiB.
 - **Web extension**: support on the web (vscode.dev, GitHub Codespaces).
 - **Generate resource designer file**
 

@@ -340,7 +340,7 @@ window.addEventListener('message', (event) => {
 	}
 });
 
-// Restores content across the tear-down/re-create cycle when the webview loses visibility.
+// Restores content across the tear-down/recreate cycle when the webview loses visibility.
 const state = vscode.getState();
 if (state) {
 	updateContent(state.obj);
